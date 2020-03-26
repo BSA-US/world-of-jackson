@@ -1,3 +1,4 @@
+=======
 # World of Jackson
 
 World of Jackson will be an interactive feature accessed from the [Dual Power Map](https://blacksocialists.us/dual-power-map), which plots cooperatives and Dual Power Projects around the US. As the only project of its kind so far, [Cooperation Jackson](https://cooperationjackson.org/intro) is highlighted, and is the subject of what we're building in this repo.
@@ -24,3 +25,4 @@ This page includes:
 Make sure you read the [contributor guidelines](https://github.com/BSA-US/world-of-jackson/blob/master/README.md) before you move on.
 
 ## Setup
+>>>>>>> Create README.md
