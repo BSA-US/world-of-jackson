@@ -1,0 +1,33 @@
+{
+  "name": "BSA-Woj",
+  "version": "0.0.1",
+  "description": "BSA World of Jackson",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "nodemon --ignore node_modules/ --ignore log/ --ignore babel_cache/ --ignore babel_cache/  --ignore temp/ -e js,css,html ./build_dev/server.js dev | bunyan",
+    "build": "webpack --env.production",
+    "dev-watch": "webpack --watch | npm run sass-watch | npm run dev",
+    "watch": "webpack --watch --env.development",
+    "serve": "nodemon build_server/server.js"
+  },
+  "author": "BSA",
+  "license": "??",
+  "dependencies": {
+    "@types/mapbox-gl": "^1.8.1",
+    "@types/node": "^13.9.2",
+    "@types/react": "^16.9.25",
+    "@types/react-dom": "^16.9.5",
+    "bunyan": "^1.8.12",
+    "mapbox-gl": "^1.8.1",
+    "nodemon": "^2.0.2",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.8.3",
+    "webpack": "^4.42.0",
+    "webpack-node-externals": "^1.7.2"
+  },
+  "devDependencies": {
+    "webpack-cli": "^3.3.11"
+  }
+}

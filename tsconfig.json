@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+      "allowJs": false,
+      "alwaysStrict": true,
+      "emitDecoratorMetadata": false,
+      "experimentalDecorators": false,
+      "jsx": "react",
+      "lib": ["es5", "es6", "dom"],
+      "module": "commonjs",
+      "moduleResolution": "node",
+      "resolveJsonModule": true,
+      "sourceMap": true,
+      "target": "es5",
+      "strict": true
+    },
+    "include": [
+      "./src"
+    ],
+    "exclude": [
+      "node_modules",
+      "build"
+    ]
+}
