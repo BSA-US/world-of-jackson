@@ -4,7 +4,7 @@ import * as MapBox from "mapbox-gl"
 // import { MapContext } from "./main"
 /*
 TODO:
-use mapboxgl to highlight buildings & allow selection
+
 */
 
 // export 
