@@ -78,6 +78,7 @@ export function Map ({ callbackRegistration, callback }: MapProps) {
                 .setHTML(e.features[0].properties.name )
                 .addTo(localMap);
                 });
+            //     React.createElement(Test),
         })
 
         /*
