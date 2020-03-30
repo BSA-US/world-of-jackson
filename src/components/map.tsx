@@ -6,8 +6,18 @@ import * as MapBox from "mapbox-gl"
 /*
 TODO:
 
-use mapboxgl to highlight specific buildings
-mapbox click & selection of specific buildings driving events
+basic tour timeline
+    click on tour to flyto location/area
+
+    location: {
+        building
+        building
+        building
+    }
+    
+    click on building to goto tour
+    render popup with info on site
+
 extract coordinates from building a transition city landscape
 
 */
@@ -73,13 +83,26 @@ export function Map({ callbackRegistration, callback }: MapProps) {
                     
                     // Get the fill-extrusion-color from the source 'color' property.
                     //'fill-extrusion-color': '#088',
-                    'fill-extrusion-color': ['get', 'color'],
+                    //'fill-extrusion-color': ['get', 'color'],
+                    'fill-extrusion-color': [
+                        'case',
+                        ['boolean', ['feature-state', 'selected'], false],
+                        '#00f',
+                        ['get', 'color']
+                    ],
                     
                     // Get fill-extrusion-height from the source 'height' property.
                     'fill-extrusion-height': ['get', 'height'],
                     
                     // Get fill-extrusion-base from the source 'base_height' property.
                     'fill-extrusion-base': ['get', 'base_height'],
+
+                    // 'fill-extrusion-opacity': [
+                    //     'case',
+                    //     ['boolean', ['feature-state', 'hover'], false],
+                    //     1,
+                    //     0.5
+                    // ]                    
                     
                     // Make extrusions slightly opaque for see through indoor walls.
                     // 'fill-extrusion-opacity': 0.5
@@ -132,16 +155,25 @@ export function Map({ callbackRegistration, callback }: MapProps) {
                 
                 //.addTo(localMap)
 
+            let prior_selected: string | number | null = null
             localMap.on('click', 'buildings', function (e) {
-                // popup.setLngLat(e.lngLat)
 
                 const features = localMap.queryRenderedFeatures(e.point, { layers: ['buildings'] });
-                console.log(features)
-                //localMap.setPaintProperty('buildings', 'color', 'green')
-                localMap.setFeatureState(
-                    { source: "floorplan", id: 1 },
-                    { color: "#0f0" }
-                );
+                // console.log(features)
+
+                if (features[0].id) {
+                    if (prior_selected) {
+                        localMap.setFeatureState(
+                            { source: "floorplan", id: prior_selected },
+                            { selected: false }
+                        );
+                    }
+                    prior_selected = features[0].id
+                    localMap.setFeatureState(
+                        { source: "floorplan", id: features[0].id },
+                        { selected: true }
+                    );
+                }
 
 
                 const prev = document.getElementById('map-click-popup')
@@ -157,38 +189,7 @@ export function Map({ callbackRegistration, callback }: MapProps) {
                     document.getElementById('map-click-popup')
                 );
 
-
-                // popup.remove()
-                // setTimeout(() => {
-                //     popup.setLngLat(e.lngLat)
-                //     .addTo(localMap)
-                //     ReactDOM.render(
-                //         React.createElement(Test),
-                //         document.getElementById('map-click-popup')
-                //     );
-        
-                // })
-
-                /*
-                new MapBox.Popup()
-                    .setLngLat(e.lngLat)
-                    //.setHTML(`<div style="background-color:red">Hello there</div>` )
-                    // .setHTML(`hello there ${localMap} `)
-                    .setHTML(`<div id="map-click-popup">hiiiiiiiii</div>`)
-                    .addTo(localMap);
-                console.log()
-*/
-                // ReactDOM.render(
-                //     React.createElement(Test),
-                //     document.getElementById('map-click-popup')
-                // );
-
             });
-            // ReactDOM.render(
-            //     React.createElement(Test),
-            //     document.getElementById('map-click-popup')
-            // );    
-
         })
 
         /*
@@ -266,9 +267,10 @@ export function Map({ callbackRegistration, callback }: MapProps) {
 
     return (
         <div>
-            INSERT MAP
-                    <button onClick={onClick}> fly to the sea </button>
-            <div id='map' style={{ width: '400px', height: '300px' }} />
+            <div id='map' style={{ position: "absolute", left: 0, top: 0, width: '100%', height: '100%' }} />
+            <div style={{ position: "absolute", left: 0, bottom: 0, zIndex: 1 }}>
+                <button onClick={onClick}> fly to the sea </button>
+            </div>
         </div>
     )
 }
