@@ -3,24 +3,6 @@ import * as ReactDOM from 'react-dom'
 import * as MapBox from "mapbox-gl"
 
 // import { MapContext } from "./main"
-/*
-TODO:
-
-basic tour timeline
-    click on tour to flyto location/area
-
-    location: {
-        building
-        building
-        building
-    }
-    
-    click on building to goto tour
-    render popup with info on site
-
-extract coordinates from building a transition city landscape
-
-*/
 
 // export 
 // export type MapProps {
@@ -28,7 +10,7 @@ extract coordinates from building a transition city landscape
 //     callbackRegistration: (callback: (location: MapBox.LngLat) => void)
 // }
 type MapProps = {
-    callbackRegistration: (callback: (location: MapBox.LngLat) => void) => void
+    callbackRegistration: (callback: (location: MapBox.LngLat, buildingIds: (string | number)[]) => void) => void
     callback: (location: MapBox.LngLat) => void
 }
 
@@ -54,6 +36,14 @@ function loadJSON(url: string, callback: any) {
 export function Map({ callbackRegistration, callback }: MapProps) {
 
     const [map, setMap] = React.useState<MapBox.Map | null>(null);
+
+    const [highlights, setHighlights] = React.useState<(string | number)[]>([]);
+
+    const getHighlight = () => {
+        return highlights
+    }
+
+    console.log("RENDER", highlights);
 
     React.useEffect(() => {
         const localMap: MapBox.Map = new MapBox.Map({
@@ -110,56 +100,11 @@ export function Map({ callbackRegistration, callback }: MapProps) {
                 });
 
             })
-/*
-            // commented out until 
-            localMap.addLayer(
-                {
-                    'id': '3d-buildings',
-                    'source': 'composite',
-                    'source-layer': 'building',
-                    'filter': ['==', 'extrude', 'true'],
-                    'type': 'fill-extrusion',
-                    'minzoom': 15,
-                    'paint': {
-                        'fill-extrusion-color': '#aaa',
-
-                        // https://docs.mapbox.com/help/tutorials/mapbox-gl-js-expressions/#what-are-expressions
-                        // https://docs.mapbox.com/mapbox-gl-js/style-spec/expressions/
-
-                        // use an 'interpolate' expression to add a smooth transition effect to the
-                        // buildings as the user zooms in
-                        'fill-extrusion-height': [
-                            'interpolate',
-                            ['linear'],
-                            ['zoom'],
-                            15,
-                            0,
-                            15.05,
-                            ['get', 'height']
-                        ],
-                        'fill-extrusion-base': [
-                            'interpolate',
-                            ['linear'],
-                            ['zoom'],
-                            15,
-                            0,
-                            15.05,
-                            ['get', 'min_height']
-                        ],
-                        'fill-extrusion-opacity': 0.6
-                    }
-                });
-                */
-
-            // const popup = new MapBox.Popup()
-                
-                //.addTo(localMap)
 
             let prior_selected: string | number | null = null
             localMap.on('click', 'buildings', function (e) {
 
                 const features = localMap.queryRenderedFeatures(e.point, { layers: ['buildings'] });
-                // console.log(features)
 
                 if (features[0].id) {
                     if (prior_selected) {
@@ -174,7 +119,6 @@ export function Map({ callbackRegistration, callback }: MapProps) {
                         { selected: true }
                     );
                 }
-
 
                 const prev = document.getElementById('map-click-popup')
                 if (prev) {
@@ -192,61 +136,33 @@ export function Map({ callbackRegistration, callback }: MapProps) {
             });
         })
 
-        /*
-        var layers: any = localMap.getStyle().layers;
-        var labelLayerId;
-        for (var i = 0; i < layers.length; i++) {
-            if (layers[i].type === 'symbol' && layers[i].layout['text-field']) {
-                labelLayerId = layers[i].id;
-                break;
-            }
-        }
+        // console.log("value", value);
+        callbackRegistration((location: MapBox.LngLat, buildingIds: (string | number)[]) => {
+            console.log("location", location, buildingIds);
+            localMap.flyTo({ center: { lng: location.lng, lat: location.lat } })
 
-        localMap.addLayer(
-        {
-            'id': '3d-buildings',
-            'source': 'composite',
-            'source-layer': 'building',
-            'filter': ['==', 'extrude', 'true'],
-            'type': 'fill-extrusion',
-            'minzoom': 15,
-            'paint': {
-                'fill-extrusion-color': '#aaa',
-                
-                // use an 'interpolate' expression to add a smooth transition effect to the
-                // buildings as the user zooms in
-                'fill-extrusion-height': [
-                    'interpolate',
-                    ['linear'],
-                    ['zoom'],
-                    15,
-                    0,
-                    15.05,
-                    ['get', 'height']
-                ],
-                'fill-extrusion-base': [
-                    'interpolate',
-                    ['linear'],
-                    ['zoom'],
-                    15,
-                    0,
-                    15.05,
-                    ['get', 'min_height']
-                ],
-                'fill-extrusion-opacity': 0.6
-            }
-        },
-        labelLayerId
-        );
-*/
+            // console.log("highlights", getHighlight())
+            highlights.forEach((id: string | number) => {
+                localMap.setFeatureState(
+                    { source: "floorplan", id: id },
+                    { selected: false }
+                )
+            })
+
+            const newHighlights: (string | number)[] = [];
+            buildingIds.forEach((id: string | number) => {
+                newHighlights.push(id);
+                localMap.setFeatureState(
+                    { source: "floorplan", id: id },
+                    { selected: true }
+                )
+            })
+            console.log("newHighlights", newHighlights)
+            setHighlights(newHighlights)
+        })
 
         setMap(localMap)
 
-        // console.log("value", value);
-        callbackRegistration((location: MapBox.LngLat) => {
-            console.log("location", location, localMap);
-            localMap.flyTo({ center: { lng: location.lng, lat: location.lat } })
-        })
         /* TODO add a prop/value for the hook to listen to, 
         and only create a new map if the map is falsy */
     }, [])
