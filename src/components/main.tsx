@@ -1,7 +1,5 @@
 import * as React from "react";
 import * as MapBox from "mapbox-gl";
-import styled from 'styled-components'
-
 import { Map } from "./map";
 
 /*
