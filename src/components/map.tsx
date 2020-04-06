@@ -37,13 +37,13 @@ export function Map({ callbackRegistration, callback }: MapProps) {
 
     const [map, setMap] = React.useState<MapBox.Map | null>(null);
 
-    const [highlights, setHighlights] = React.useState<(string | number)[]>([]);
+    // const [highlights, setHighlights] = React.useState<(string | number)[]>([]);
 
-    const getHighlight = () => {
-        return highlights
-    }
+    // const getHighlight = () => {
+        // return highlights
+    // }
 
-    console.log("RENDER", highlights);
+    // console.log("RENDER", highlights);
 
     React.useEffect(() => {
         const localMap: MapBox.Map = new MapBox.Map({
@@ -58,6 +58,7 @@ export function Map({ callbackRegistration, callback }: MapProps) {
 
         })
 
+        let stateObj: { highlights: (string | number)[] } = { highlights: [] }
         localMap.once('style.load', () => {
 
             loadJSON("http://www.graborenko.org/jackson_churches.json", (data: any) => {
@@ -101,19 +102,26 @@ export function Map({ callbackRegistration, callback }: MapProps) {
 
             })
 
-            let prior_selected: string | number | null = null
+            //let prior_selected: string | number | null = null
             localMap.on('click', 'buildings', function (e) {
 
                 const features = localMap.queryRenderedFeatures(e.point, { layers: ['buildings'] });
 
                 if (features[0].id) {
-                    if (prior_selected) {
+                    stateObj.highlights.forEach((id: string | number) => {
                         localMap.setFeatureState(
-                            { source: "floorplan", id: prior_selected },
+                            { source: "floorplan", id: id },
                             { selected: false }
-                        );
-                    }
-                    prior_selected = features[0].id
+                        )
+                    })
+                    stateObj.highlights = [features[0].id]
+                    // if (prior_selected) {
+                    //     localMap.setFeatureState(
+                    //         { source: "floorplan", id: prior_selected },
+                    //         { selected: false }
+                    //     );
+                    // }
+                    // prior_selected = features[0].id
                     localMap.setFeatureState(
                         { source: "floorplan", id: features[0].id },
                         { selected: true }
@@ -138,11 +146,12 @@ export function Map({ callbackRegistration, callback }: MapProps) {
 
         // console.log("value", value);
         callbackRegistration((location: MapBox.LngLat, buildingIds: (string | number)[]) => {
-            console.log("location", location, buildingIds);
+            // console.log("location", location, buildingIds);
             localMap.flyTo({ center: { lng: location.lng, lat: location.lat } })
 
             // console.log("highlights", getHighlight())
-            highlights.forEach((id: string | number) => {
+            // console.log("highlights", stateObj.highlights)
+            stateObj.highlights.forEach((id: string | number) => {
                 localMap.setFeatureState(
                     { source: "floorplan", id: id },
                     { selected: false }
@@ -157,8 +166,9 @@ export function Map({ callbackRegistration, callback }: MapProps) {
                     { selected: true }
                 )
             })
-            console.log("newHighlights", newHighlights)
-            setHighlights(newHighlights)
+            // console.log("newHighlights", newHighlights)
+            stateObj.highlights = newHighlights
+            //setHighlights(newHighlights)
         })
 
         setMap(localMap)
