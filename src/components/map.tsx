@@ -37,14 +37,6 @@ export function Map({ callbackRegistration, callback }: MapProps) {
 
     const [map, setMap] = React.useState<MapBox.Map | null>(null);
 
-    // const [highlights, setHighlights] = React.useState<(string | number)[]>([]);
-
-    // const getHighlight = () => {
-        // return highlights
-    // }
-
-    // console.log("RENDER", highlights);
-
     React.useEffect(() => {
         const localMap: MapBox.Map = new MapBox.Map({
             container: 'map',
@@ -107,6 +99,7 @@ export function Map({ callbackRegistration, callback }: MapProps) {
 
                 const features = localMap.queryRenderedFeatures(e.point, { layers: ['buildings'] });
 
+                console.log(features);
                 if (features[0].id) {
                     stateObj.highlights.forEach((id: string | number) => {
                         localMap.setFeatureState(
@@ -115,19 +108,13 @@ export function Map({ callbackRegistration, callback }: MapProps) {
                         )
                     })
                     stateObj.highlights = [features[0].id]
-                    // if (prior_selected) {
-                    //     localMap.setFeatureState(
-                    //         { source: "floorplan", id: prior_selected },
-                    //         { selected: false }
-                    //     );
-                    // }
-                    // prior_selected = features[0].id
                     localMap.setFeatureState(
                         { source: "floorplan", id: features[0].id },
                         { selected: true }
                     );
                 }
 
+                /* popup commented out
                 const prev = document.getElementById('map-click-popup')
                 if (prev) {
                     prev.remove();
@@ -140,17 +127,14 @@ export function Map({ callbackRegistration, callback }: MapProps) {
                     React.createElement(MapPopup),
                     document.getElementById('map-click-popup')
                 );
+                */
 
             });
         })
 
-        // console.log("value", value);
         callbackRegistration((location: MapBox.LngLat, buildingIds: (string | number)[]) => {
-            // console.log("location", location, buildingIds);
             localMap.flyTo({ center: { lng: location.lng, lat: location.lat } })
 
-            // console.log("highlights", getHighlight())
-            // console.log("highlights", stateObj.highlights)
             stateObj.highlights.forEach((id: string | number) => {
                 localMap.setFeatureState(
                     { source: "floorplan", id: id },
@@ -166,9 +150,7 @@ export function Map({ callbackRegistration, callback }: MapProps) {
                     { selected: true }
                 )
             })
-            // console.log("newHighlights", newHighlights)
             stateObj.highlights = newHighlights
-            //setHighlights(newHighlights)
         })
 
         setMap(localMap)
@@ -176,20 +158,10 @@ export function Map({ callbackRegistration, callback }: MapProps) {
         /* TODO add a prop/value for the hook to listen to, 
         and only create a new map if the map is falsy */
     }, [])
-    // console.log(test);
-
-    // cleaner way to fetch context updates, we should use this to update the map
 
     function onClick() {
         callback(new MapBox.LngLat(153.0437, -27.497925));
-        // if(map !== null) {
-        //     map.flyTo({
-        //         center: { lng: 153.0437, lat: -27.497925 }
-        //     })
-        // }
     }
-
-    // console.log(MapContext, MapContext.Consumer)
 
     return (
         <div>
@@ -200,6 +172,5 @@ export function Map({ callbackRegistration, callback }: MapProps) {
         </div>
     )
 }
-
 
 //////////////////////////

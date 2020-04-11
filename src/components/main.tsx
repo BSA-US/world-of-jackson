@@ -2,6 +2,18 @@ import * as React from "react";
 import * as MapBox from "mapbox-gl";
 import { Map } from "./map";
 
+import { StaticMap } from "react-map-gl";
+const DeckGLReact: any = require("@deck.gl/react");
+const DeckGLLayers: any = require("@deck.gl/layers");
+const DeckGLCore: any = require("@deck.gl/core");
+
+// import {
+//   LightingEffect,
+//   AmbientLight,
+//   _SunLight as SunLight,
+//   FlyToInterpolator
+// } from "@deck.gl/core";
+
 /*
 TODO:
 Skeleton:
@@ -97,6 +109,37 @@ export class Main extends React.Component<MainProps, MainState> {
   }
   render() {
 
+    /*
+    const INITIAL_VIEW_STATE = {
+      latitude: 49.2708766,
+      longitude: -123.1008337,
+      zoom: 15,
+      maxZoom: 16,
+      pitch: 45,
+      bearing: 0
+    };
+
+    <div style={{ position: "absolute", left: 0, bottom: 0, width: "100%", height: "40%" }}>
+
+    <DeckGLReact.DeckGL
+      layers={ [] }
+      effects={ [] }
+      initialViewState={INITIAL_VIEW_STATE}
+      viewState={INITIAL_VIEW_STATE}
+    >
+      <StaticMap
+        reuseMaps
+        mapStyle={ "mapbox://styles/mapbox/dark-v9" }
+        preventStyleDiffing={true}
+        width={ "100%" }
+        height={ "100%" }
+        mapboxApiAccessToken={'pk.eyJ1IjoiZ3JhYm9yZW5rbyIsImEiOiJjazdrenBmZmgwMXhjM2xvMDUxczB3bXdrIn0.TuJeI3ekW2M3_ArY0gMeVA'}
+      />
+    </DeckGLReact.DeckGL>
+  </div>
+  */
+
+
     return (
       <div>
         <div style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "100%" }}>
@@ -104,7 +147,7 @@ export class Main extends React.Component<MainProps, MainState> {
         </div>
         <div style={{ position: "absolute", left: 0, top: 0 }}>
           { tour.map(this.renderTourNode.bind(this) ) }
-        </div>          
+        </div>
       </div>
     );
   }
