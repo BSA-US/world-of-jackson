@@ -4,18 +4,9 @@ import * as MapBox from "mapbox-gl"
 const MapboxLayer: any = require("@deck.gl/mapbox");
 
 const DeckGLReact: any = require("@deck.gl/react");
-const DeckGLLayers: any = require("@deck.gl/layers");
-const DeckGLCore: any = require("@deck.gl/core");
 
-const LightingEffect: any = DeckGLCore.LightingEffect;
-const AmbientLight: any = DeckGLCore.AmbientLight;
-const SunLight: any = DeckGLCore._SunLight;
-const DirectionalLight: any = DeckGLCore.DirectionalLight;
-  
-const ScatterplotLayer: any = DeckGLLayers.ScatterplotLayer;
-const PolygonLayer: any = DeckGLLayers.PolygonLayer;
-const GeoJsonLayer: any = DeckGLLayers.GeoJsonLayer;
-
+import layers from './layers';
+import effects from './effects';
 
 //const ScatterplotLayer: any = require("@deck.gl/layers/scatterplot-layer");
 // const DeckGLCore: any = require("@deck.gl/core");
@@ -68,8 +59,6 @@ export function Map({ callbackRegistration, callback }: MapProps) {
         bearing: 0
     };
 
-
-
     React.useEffect(() => {
 
         if (!gl || !deckGlContainer.current) {
@@ -86,6 +75,8 @@ export function Map({ callbackRegistration, callback }: MapProps) {
           return gl;
         };        
         
+        // const { mapStyle = "mapbox://styles/mapbox/dark-v9" } = this.props;
+
         const localMap: MapBox.Map = new MapBox.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/streets-v9',
@@ -95,11 +86,15 @@ export function Map({ callbackRegistration, callback }: MapProps) {
             pitch: 45,
             antialias: true,
             accessToken: 'pk.eyJ1IjoiZ3JhYm9yZW5rbyIsImEiOiJjazdrenBmZmgwMXhjM2xvMDUxczB3bXdrIn0.TuJeI3ekW2M3_ArY0gMeVA'
-
+            //,mapStyle: "mapbox://styles/mapbox/dark-v9"
         })
+        localMap.setStyle("mapbox://styles/mapbox/dark-v9");
 
         let stateObj: { highlights: (string | number)[] } = { highlights: [] }
         localMap.once('style.load', () => {
+
+            var layers = localMap.getStyle().layers;
+            console.log(layers);
 
             localMap.addLayer(new MapboxLayer.MapboxLayer({id: 'my-scatterplot', deck}), 'waterway-label')
             /*
@@ -219,78 +214,8 @@ export function Map({ callbackRegistration, callback }: MapProps) {
     // latitude: 32.3039644,
     // longitude: -90.2094766,
 
-    const landCover = [
-        //[[-123.0, 49.196], [-123.0, 49.324], [-123.306, 49.324], [-123.306, 49.196]]
-        //[[-180.0, -90.0], [-180.0, 90.0], [180.0, 90.0], [180.0, -90.0]]
-        [[-90.21, 32.3], [-90.21, 32.4], [-90.20, 32.4], [-90.20, 32.3]]
-      ];
 
-    //         
-      
-    const layers = [
-        new PolygonLayer({
-            id: "ground",
-            data: landCover,
-            stroked: false,
-            // opacity: 0.8,
-            getPolygon: (f: any) => f,
-            getFillColor: [0, 0, 255.0, 255.0]
-        })
-        // ,new PolygonLayer({
-        //     id: "above-ground",
-        //     data: [[[-90.21, 32.3, 10], [-90.21, 32.301, 10], [-90.2099, 32.301, 10], [-90.2099, 32.3, 10]]],
-        //     stroked: false,
-        //     getPolygon: (f: any) => f,
-        //     getFillColor: [0, 255, 0, 255.0]
-        // })
-        ,new GeoJsonLayer({
-            data: 'http://www.graborenko.org/jackson.json',
-            opacity: 0.8,
-            stroked: false,
-            filled: true,
-            extruded: true,
-            wireframe: true,
-            fp64: true,
-      
-            getElevation: (f: any) => 20,
-            getFillColor: (f: any) => [0, 255, 0, 255.0],
-            getLineColor: [255, 255, 255],
-      
-            pickable: true,
-            onHover: () => {}
-          })
-      
-        // ,new ScatterplotLayer({
-        //   id: 'my-scatterplot',
-        //   data: [
-        //     {position: [-90.2094766, 32.3039644], size: 10}
-        //   ],
-        //   getPosition: (d: any) => d.position,
-        //   getRadius: (d: any) => d.size,
-        //   getColor: [255, 0, 0]
-        // })
-    ];
 
-    const ambientLight = new AmbientLight({
-        color: [255, 255, 255],
-        intensity: 1.0
-    });
-      
-    // const dirLight = new SunLight({
-    //     timestamp: Date.UTC(2019, 7, 1, 22),
-    //     color: [255, 255, 255],
-    //     intensity: 1.0,
-    //     _shadow: true
-    // });
-    const dirLight = new DirectionalLight({
-        direction: [10, -100, -100],
-        color: [255, 255, 255],
-        intensity: 1.0,
-        _shadow: true
-    });
-    
-    const lightingEffect = new LightingEffect({ ambientLight, dirLight });
-    lightingEffect.shadowColor = [0, 0, 0, 0.5];
 
     // console.log(layers);
 
@@ -298,7 +223,7 @@ export function Map({ callbackRegistration, callback }: MapProps) {
         <div>
             <DeckGLReact.DeckGL
                 layers={ layers }
-                effects={ [lightingEffect] }
+                effects={ effects }
                 controller={true}
                 initialViewState={INITIAL_VIEW_STATE}
                 viewState={INITIAL_VIEW_STATE}
