@@ -17,7 +17,7 @@ const layers = [
         stroked: false,
         // opacity: 0.8,
         getPolygon: (f: any) => f,
-        getFillColor: [0, 0, 255.0, 255.0]
+        getFillColor: [0, 0, 0.0, 0.0]
     })
     // ,new PolygonLayer({
     //     id: "above-ground",

@@ -1,6 +1,13 @@
 import * as React from "react"
 import * as ReactDOM from 'react-dom'
 import * as MapBox from "mapbox-gl"
+import { StaticMap } from "react-map-gl";
+
+const DeckGLCore: any = require("@deck.gl/core");
+
+// import { MapController } from "@deck.gl/core";
+const MapController = DeckGLCore.MapController;
+
 const MapboxLayer: any = require("@deck.gl/mapbox");
 
 const DeckGLReact: any = require("@deck.gl/react");
@@ -50,20 +57,29 @@ export function Map({ callbackRegistration, callback }: MapProps) {
     const [gl, setGl] = React.useState<WebGLRenderingContext | null>(null);
     const deckGlContainer = React.useRef<any>(null);
 
-    const INITIAL_VIEW_STATE = {
+    // center: { lng: -90.2093766, lat: 32.3039644 },
+
+    const [viewState, setViewState] = React.useState<any>({
         latitude: 32.3039644,
         longitude: -90.2094766,
         zoom: 15,
-        maxZoom: 16,
+        // maxZoom: 16,
         pitch: 45,
-        bearing: 0
-    };
+        bearing: 45
+    });
+
+    function setViewStateCallback(a: any) {
+        console.log(a);
+    }
 
     React.useEffect(() => {
 
         if (!gl || !deckGlContainer.current) {
             return;
         }
+
+        return;
+
         const deck: any = deckGlContainer.current.deck;
 
         const getContext = HTMLCanvasElement.prototype.getContext;
@@ -218,18 +234,34 @@ export function Map({ callbackRegistration, callback }: MapProps) {
 
 
     // console.log(layers);
+    // console.log(DeckGLCore.MapController);
 
     return (
         <div>
             <DeckGLReact.DeckGL
                 layers={ layers }
                 effects={ effects }
-                controller={true}
-                initialViewState={INITIAL_VIEW_STATE}
-                viewState={INITIAL_VIEW_STATE}
+
+                // controller={ true }
+                // initialViewState={viewState}
+                
+                controller={ MapController }
+                initialViewState={viewState}
+                viewState={viewState}
+                onViewStateChange={setViewStateCallback}
+        
                 onWebGLInitialized = {(gl: WebGLRenderingContext) => { setGl(gl) }}
                 ref={deckGlContainer}
-            ></DeckGLReact.DeckGL>
+            >
+                <StaticMap
+                    reuseMaps
+                    mapStyle={ "mapbox://styles/mapbox/dark-v9" }
+                    preventStyleDiffing={true}
+                    width={ "100%" }
+                    height={ "100%" }
+                    mapboxApiAccessToken={'pk.eyJ1IjoiZ3JhYm9yZW5rbyIsImEiOiJjazdrenBmZmgwMXhjM2xvMDUxczB3bXdrIn0.TuJeI3ekW2M3_ArY0gMeVA'}
+                />
+            </DeckGLReact.DeckGL>
             <div id='map' style={{ position: "absolute", left: 0, top: 0, width: '100%', height: '100%' }} />
             <div style={{ position: "absolute", left: 0, bottom: 0, zIndex: 1 }}>
                 <button onClick={onClick}> fly to the sea </button>
