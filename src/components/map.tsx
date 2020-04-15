@@ -3,16 +3,15 @@ import * as ReactDOM from 'react-dom'
 import * as MapBox from "mapbox-gl"
 import { StaticMap } from "react-map-gl";
 
-const DeckGLCore: any = require("@deck.gl/core");
-
-// import { MapController } from "@deck.gl/core";
-const MapController = DeckGLCore.MapController;
+// const DeckGLCore: any = require("@deck.gl/core");
+// const MapController = DeckGLCore.MapController;
 
 const MapboxLayer: any = require("@deck.gl/mapbox");
 
 const DeckGLReact: any = require("@deck.gl/react");
 
-import layers from './layers';
+//import layers from './layers';
+import { GetLayers } from './layers';
 import effects from './effects';
 
 //const ScatterplotLayer: any = require("@deck.gl/layers/scatterplot-layer");
@@ -69,7 +68,7 @@ export function Map({ callbackRegistration, callback }: MapProps) {
     });
 
     function setViewStateCallback(a: any) {
-        console.log(a);
+        setViewState(a.viewState);
     }
 
     React.useEffect(() => {
@@ -230,25 +229,19 @@ export function Map({ callbackRegistration, callback }: MapProps) {
     // latitude: 32.3039644,
     // longitude: -90.2094766,
 
-
-
-
-    // console.log(layers);
-    // console.log(DeckGLCore.MapController);
-
     return (
         <div>
             <DeckGLReact.DeckGL
-                layers={ layers }
+                layers={ GetLayers(viewState.latitude, viewState.longitude, viewState.zoom) }
                 effects={ effects }
 
                 // controller={ true }
                 // initialViewState={viewState}
                 
-                controller={ MapController }
+                controller={ true }
                 initialViewState={viewState}
                 viewState={viewState}
-                onViewStateChange={setViewStateCallback}
+                onViewStateChange={(state: any) => setViewState(state.viewState)}
         
                 onWebGLInitialized = {(gl: WebGLRenderingContext) => { setGl(gl) }}
                 ref={deckGlContainer}
@@ -262,7 +255,6 @@ export function Map({ callbackRegistration, callback }: MapProps) {
                     mapboxApiAccessToken={'pk.eyJ1IjoiZ3JhYm9yZW5rbyIsImEiOiJjazdrenBmZmgwMXhjM2xvMDUxczB3bXdrIn0.TuJeI3ekW2M3_ArY0gMeVA'}
                 />
             </DeckGLReact.DeckGL>
-            <div id='map' style={{ position: "absolute", left: 0, top: 0, width: '100%', height: '100%' }} />
             <div style={{ position: "absolute", left: 0, bottom: 0, zIndex: 1 }}>
                 <button onClick={onClick}> fly to the sea </button>
             </div>
