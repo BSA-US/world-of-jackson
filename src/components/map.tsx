@@ -1,31 +1,18 @@
 import * as React from "react"
-import * as ReactDOM from 'react-dom'
 import * as MapBox from "mapbox-gl"
 import { StaticMap } from "react-map-gl";
 
-// const DeckGLCore: any = require("@deck.gl/core");
-// const MapController = DeckGLCore.MapController;
-
+const DeckGLCore: any = require("@deck.gl/core");
 const MapboxLayer: any = require("@deck.gl/mapbox");
-
 const DeckGLReact: any = require("@deck.gl/react");
+
+const FlyToInterpolator: any = DeckGLCore.FlyToInterpolator;
+// const MapController = DeckGLCore.MapController;
 
 //import layers from './layers';
 import { GetLayers } from './layers';
 import effects from './effects';
 
-//const ScatterplotLayer: any = require("@deck.gl/layers/scatterplot-layer");
-// const DeckGLCore: any = require("@deck.gl/core");
-// import DeckGL, {ScatterplotLayer} from 'deck.gl';
-// const DeckGL: any = DeckGLReact.DeckGL;
-
-// import { MapContext } from "./main"
-
-// export 
-// export type MapProps {
-// test: string
-//     callbackRegistration: (callback: (location: MapBox.LngLat) => void)
-// }
 type MapProps = {
     callbackRegistration: (callback: (location: MapBox.LngLat, buildingIds: (string | number)[]) => void) => void
     callback: (location: MapBox.LngLat) => void
@@ -35,19 +22,6 @@ export class MapPopup extends React.Component<{ }, {}> {
     render() {
         return <div style={{ backgroundColor: "red" }}>map test</div>
     }
-}
-
-function loadJSON(url: string, callback: any) {
-
-    var xobj = new XMLHttpRequest();
-    xobj.overrideMimeType("application/json");
-    xobj.open('GET', url, true);
-    xobj.onreadystatechange = function () {
-        if (xobj.readyState == 4 && xobj.status == 200) {
-            callback(JSON.parse(xobj.responseText));
-        }
-    };
-    xobj.send(null);  
 }
 
 export function Map({ callbackRegistration, callback }: MapProps) {
@@ -62,14 +36,9 @@ export function Map({ callbackRegistration, callback }: MapProps) {
         latitude: 32.3039644,
         longitude: -90.2094766,
         zoom: 15,
-        // maxZoom: 16,
         pitch: 45,
         bearing: 45
     });
-
-    function setViewStateCallback(a: any) {
-        setViewState(a.viewState);
-    }
 
     React.useEffect(() => {
 
@@ -225,6 +194,17 @@ export function Map({ callbackRegistration, callback }: MapProps) {
     function onClick() {
         callback(new MapBox.LngLat(153.0437, -27.497925));
     }
+
+    callbackRegistration((location: MapBox.LngLat, buildingIds: (string | number)[]) => {
+        setViewState({
+            ...viewState,
+            longitude: location.lng,
+            latitude: location.lat,
+            zoom: 17,
+            transitionDuration: 1000,
+            transitionInterpolator: new FlyToInterpolator()
+        })
+    })
 
     // latitude: 32.3039644,
     // longitude: -90.2094766,

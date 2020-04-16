@@ -2,6 +2,19 @@ const DeckGLLayers: any = require("@deck.gl/layers");
 const PolygonLayer: any = DeckGLLayers.PolygonLayer;
 const GeoJsonLayer: any = DeckGLLayers.GeoJsonLayer;
 
+function loadJSON(url: string, callback: any) {
+
+  var xobj = new XMLHttpRequest();
+  xobj.overrideMimeType("application/json");
+  xobj.open('GET', url, true);
+  xobj.onreadystatechange = function () {
+      if (xobj.readyState == 4 && xobj.status == 200) {
+          callback(JSON.parse(xobj.responseText));
+      }
+  };
+  xobj.send(null);  
+}
+
 export function GetLayers(cam_lat: number, cam_long: number, zoom: number) {
 
   const size = Math.pow(2, (19 - zoom)) * .004
