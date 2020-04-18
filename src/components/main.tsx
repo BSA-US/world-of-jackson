@@ -2,22 +2,6 @@ import * as React from "react";
 import * as MapBox from "mapbox-gl";
 import { Map } from "./map";
 
-import { StaticMap } from "react-map-gl";
-const DeckGLReact: any = require("@deck.gl/react");
-const DeckGLLayers: any = require("@deck.gl/layers");
-const DeckGLCore: any = require("@deck.gl/core");
-const MapController: any = DeckGLCore.MapController;
-
-// console.log(DeckGLCore);
-//import { MapController } from "@deck.gl/core";
-
-// import {
-//   LightingEffect,
-//   AmbientLight,
-//   _SunLight as SunLight,
-//   FlyToInterpolator
-// } from "@deck.gl/core";
-
 /*
 TODO:
 Skeleton:
@@ -51,18 +35,18 @@ const tour: TourNode[] = [
   {
     label: "start", // -90.2093766, lat: 32.3039644
     location: new MapBox.LngLat(-90.2094766, 32.3039644),
-    buildingIds: [0, 1]
+    buildingIds: ["way/651495815"]
   },
   {
     label: "middle",
     location: new MapBox.LngLat(-90.2091766, 32.3039644),
-    buildingIds: [2]
+    buildingIds: ["way/651495823"]
 
   },
   {
     label: "end",
     location: new MapBox.LngLat(-90.2088766, 32.3039644),
-    buildingIds: []
+    buildingIds: ["way/651495821", "way/651495819", "way/651495826"]
 
   }
 ];
@@ -71,8 +55,8 @@ interface MainProps {
 }
 
 interface MainState {
-  selectedTourNode: string | null
-  
+  selectedTourNode: string | null,
+  infoText: string | null
 }
 
 export class Main extends React.Component<MainProps, MainState> {
@@ -81,9 +65,15 @@ export class Main extends React.Component<MainProps, MainState> {
 
   constructor(props: MainProps) {
     super(props);
-    this.state = { selectedTourNode: null }
+    this.state = { selectedTourNode: null, infoText: null }
   }
-  handleFlyTo(location: MapBox.LngLat, buildingIds: (string | number)[] = []) {
+  handleFlyTo(location: MapBox.LngLat, buildingProperty: any | null, buildingIds: (string | number)[] = []) {
+    if (buildingProperty !== null) {
+      console.log("building clicked", buildingProperty)
+      this.setState({ infoText: (buildingProperty.info ? buildingProperty.info : null) })
+      return;
+    }
+    this.setState({ infoText: null })
     this.Callbacks.forEach(callback => {
       callback(location, buildingIds)
     });
@@ -92,11 +82,10 @@ export class Main extends React.Component<MainProps, MainState> {
       have a list of locations with coordinates and allow users to input its latitude and longitude in context
     */
 
-  //  <MapContext.Provider value={{ lat: -27.498025783712994, lng: 53.04370816437722 }}>
-  // <Map callbackRegistration={ (callback: (location: MapBox.LngLat) => void) => { this.Callbacks.push(callback) } } />
+
   handleTourClick(tourNode: TourNode) {
     this.setState({ selectedTourNode: tourNode.label });
-    this.handleFlyTo(tourNode.location, tourNode.buildingIds)
+    this.handleFlyTo(tourNode.location, null, tourNode.buildingIds)
   }
   renderTourNode(tourNode: TourNode) {
     const buttonStyle: React.CSSProperties = {}
@@ -111,41 +100,18 @@ export class Main extends React.Component<MainProps, MainState> {
       </div>
     )
   }
+  renderInfoText() {
+    if (this.state.infoText === null) {
+      return null
+    }
+    return (
+      <div style={{ position: "absolute", right: "100px", bottom: "100px", backgroundColor: "white" }}>
+        { this.state.infoText }
+      </div>      
+    )
+  }
   render() {
 
-    // console.log(MapController);
-
-/*
-    // -90.2094766, 32.3039644
-    const INITIAL_VIEW_STATE = {
-      latitude: 32.3039644,
-      longitude: -90.2094766,
-      zoom: 15,
-      maxZoom: 16,
-      pitch: 45,
-      bearing: 0
-    };
-        <div style={{ position: "absolute", left: 0, bottom: 0, width: "100%", height: "45%" }}>
-
-          <DeckGLReact.DeckGL
-            layers={ [] }
-            effects={ [] }
-            controller={MapController}
-            initialViewState={INITIAL_VIEW_STATE}
-            viewState={INITIAL_VIEW_STATE}
-          >
-            <StaticMap
-              reuseMaps
-              mapStyle={ "mapbox://styles/mapbox/dark-v9" }
-              preventStyleDiffing={true}
-              width={ "100%" }
-              height={ "100%" }
-              mapboxApiAccessToken={'pk.eyJ1IjoiZ3JhYm9yZW5rbyIsImEiOiJjazdrenBmZmgwMXhjM2xvMDUxczB3bXdrIn0.TuJeI3ekW2M3_ArY0gMeVA'}
-            />
-          </DeckGLReact.DeckGL>
-        </div>
-
-*/
     return (
       <div>
         <div style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "100%" }}>
@@ -154,8 +120,7 @@ export class Main extends React.Component<MainProps, MainState> {
         <div style={{ position: "absolute", left: 0, top: 0 }}>
           { tour.map(this.renderTourNode.bind(this) ) }
         </div>
-
-
+        { this.renderInfoText() }
       </div>
     );
   }

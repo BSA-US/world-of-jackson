@@ -1,6 +1,7 @@
 const DeckGLLayers: any = require("@deck.gl/layers");
 const PolygonLayer: any = DeckGLLayers.PolygonLayer;
 const GeoJsonLayer: any = DeckGLLayers.GeoJsonLayer;
+import * as MapBox from "mapbox-gl"
 
 function loadJSON(url: string, callback: any) {
 
@@ -15,11 +16,20 @@ function loadJSON(url: string, callback: any) {
   xobj.send(null);  
 }
 
-export function GetLayers(cam_lat: number, cam_long: number, zoom: number) {
+export interface LayerParams {
+  cam_lat: number
+  cam_long: number
+  zoom: number
+  hash: number
+  buildingIds: { [key: string]: true },
+  callback: (location: MapBox.LngLat, buildingProperty: object | null) => void
+}
 
-  const size = Math.pow(2, (19 - zoom)) * .004
+export function GetLayers(params: LayerParams) {
+
+  const size = Math.pow(2, (19 - params.zoom)) * .004
   const landCover = [
-    [[cam_long - size, cam_lat - size], [cam_long - size, cam_lat + size], [cam_long + size, cam_lat + size], [cam_long + size, cam_lat - size]]
+    [[params.cam_long - size, params.cam_lat - size], [params.cam_long - size, params.cam_lat + size], [params.cam_long + size, params.cam_lat + size], [params.cam_long + size, params.cam_lat - size]]
   ];
 
   const layers = [
@@ -42,19 +52,29 @@ export function GetLayers(cam_lat: number, cam_long: number, zoom: number) {
     
           getElevation: (f: any) => 20,
           getFillColor: (f: any) => {
-            // if (zoom < 15) {
-            //   return [0, 255, 255, 255.0]
-            // }
+            const id = `${f.properties["@id"]}`
+            if (params.buildingIds[id]) {
+              return [0, 255, 255, 255.0]
+            }
             return [0, 255, 0, 255.0]
           },
           getLineColor: [255, 255, 255],
-          // updateTriggers: {
-          //   getFillColor: [0, 255, 255, 255.0]
-          // },
+          updateTriggers: {
+             getFillColor: [params.hash]
+          },
           pickable: true,
-          onHover: () => {}
+          onHover: () => {},
+          onClick: (f: any) => {
+            const id = `${f.object.properties["@id"]}`
+            // console.log(id)
+            if (params.buildingIds[id]) {
+              //return [0, 255, 255, 255.0]
+              params.callback(new MapBox.LngLat(f.lngLat[0], f.lngLat[1]), f.object.properties)
+            }
+
+            // params.callback(new MapBox.LngLat(f.lngLat[0], f.lngLat[1]))
+          }
         })
   ];
-
-  return layers;
+  return layers
 }
