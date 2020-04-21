@@ -3,7 +3,6 @@ import * as MapBox from "mapbox-gl"
 import { StaticMap } from "react-map-gl";
 
 const DeckGLCore: any = require("@deck.gl/core");
-const MapboxLayer: any = require("@deck.gl/mapbox");
 const DeckGLReact: any = require("@deck.gl/react");
 
 const FlyToInterpolator: any = DeckGLCore.FlyToInterpolator;
@@ -41,13 +40,14 @@ export function Map({ callbackRegistration, callback }: MapProps) {
         callback(new MapBox.LngLat(153.0437, -27.497925), null)
     }
 
+    /// runs function when the higher level component requests it
     callbackRegistration((location: MapBox.LngLat, buildingIds: (string | number)[]) => {
 
         const buildingObj: { [key: string]: true } = {}
         buildingIds.forEach((id: string | number) => {
             buildingObj[`${id}`] = true
         })
-
+// update hash
         setHash(hash + 1);
         setBuildingIds(buildingObj);
         setViewState({
