@@ -2,39 +2,35 @@ import type { IMapLayerParams } from '~/types/components/Map'
 
 import * as DeckGLLayers from "@deck.gl/layers";
 const PolygonLayer: any = DeckGLLayers.PolygonLayer;
-// const SolidPolygonLayer: any = DeckGLLayers.SolidPolygonLayer;
+const SolidPolygonLayer: any = DeckGLLayers.SolidPolygonLayer;
 const GeoJsonLayer: any = DeckGLLayers.GeoJsonLayer;
 
 // import SolidPolygonLayer from '../solid-polygon-layer/solid-polygon-layer';
 import MapBox from "mapbox-gl";
 
-/* class CustomSolidPolygonLayer extends SolidPolygonLayer {
-  constructor(props: any) {
-    super(props);
-    console.log(props);
+class CustomSolidPolygonLayer extends SolidPolygonLayer {
+  constructor(props: any, b: any, c: any) {
+    super(props, b, c);
   }
-} */
+} 
 
 class CustomGeoJsonLayer extends GeoJsonLayer {
   constructor(props: any) {
     super(props);
   }
+  shouldRenderSubLayer(id: any, features: any) {
+    const result = super.shouldRenderSubLayer(id, features)
+    return result
+  }
   getSubLayerClass(id: any, defaultConstructor: any) {
-    //console.log(id);
     if (id === "polygons-fill") {
-      // return SolidPolygonLayer
-      // console.log(CustomSolidPolygonLayer);
-      // return CustomSolidPolygonLayer;
+      return CustomSolidPolygonLayer;
     }
     const result = super.getSubLayerClass(id, defaultConstructor)
-    console.log(result);
     return result;
   }
-
   renderLayers() {
     const layers = super.renderLayers()
-    //console.log(layers)
-    //layers[4] = false
     return layers
   }
 }
