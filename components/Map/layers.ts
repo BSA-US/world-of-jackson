@@ -8,11 +8,22 @@ const GeoJsonLayer: any = DeckGLLayers.GeoJsonLayer;
 // import SolidPolygonLayer from '../solid-polygon-layer/solid-polygon-layer';
 import MapBox from "mapbox-gl";
 
+const customVertexShader: any = require('../shaders/custom-polygon.glsl.js');
+
 class CustomSolidPolygonLayer extends SolidPolygonLayer {
   constructor(props: any, b: any, c: any) {
     super(props, b, c);
   }
-} 
+  getShaders() {
+    console.log(customVertexShader.default)
+    // use object.assign to make sure we don't overwrite existing fields like `vs`, `modules`...
+    var result = Object.assign({}, super.getShaders(), {
+      vs: customVertexShader.default
+    });
+    console.log("get shader", result)
+    return result;
+  }  
+}
 
 class CustomGeoJsonLayer extends GeoJsonLayer {
   constructor(props: any) {
