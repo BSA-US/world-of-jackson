@@ -14,13 +14,15 @@ class CustomSolidPolygonLayer extends SolidPolygonLayer {
   constructor(props: any, b: any, c: any) {
     super(props, b, c);
   }
-  getShaders() {
-    console.log(customVertexShader.default)
+
+  //TODO find center of a given building
+  getShaders(vsShaderText: string) {
+    var define_text = "#define IS_SIDE_VERTEX"
+    var is_side = vsShaderText.indexOf(define_text) >= 0
     // use object.assign to make sure we don't overwrite existing fields like `vs`, `modules`...
     var result = Object.assign({}, super.getShaders(), {
-      vs: customVertexShader.default
+      vs: `${is_side ? define_text : ""}\n${customVertexShader.default}`
     });
-    console.log("get shader", result)
     return result;
   }  
 }
