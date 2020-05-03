@@ -19,13 +19,42 @@ class CustomSolidPolygonLayer extends SolidPolygonLayer {
   getShaders(vsShaderText: string) {
     var define_text = "#define IS_SIDE_VERTEX"
     var is_side = vsShaderText.indexOf(define_text) >= 0
-    // use object.assign to make sure we don't overwrite existing fields like `vs`, `modules`...
     var result = Object.assign({}, super.getShaders(), {
       vs: `${is_side ? define_text : ""}\n${customVertexShader.default}`
     });
     return result;
-  }  
+  }
+  initializeState() {
+    super.initializeState()
+
+    this.state.attributeManager.addInstanced({
+      instanceScaleOrigins: {
+        size: 2,
+        // accessor: (f: any) => { console.log(this); return [-90.210771, 32.3043128] }
+        accessor: 'getScaleOrigin'
+      }
+    });    
+  }
+  draw({uniforms}: any) {
+    // console.log(this.props.data)
+    super.draw({
+      uniforms:
+        {
+        ...uniforms,
+        scaleFactor: 1.0,
+        scaleOrigin: [-90.210771, 32.3043128]
+        }
+    })
+  }
+  // updateGeometry({props, oldProps, changeFlags}: any) {
+  //   console.log(props, oldProps, changeFlags)
+  //   super.updateGeometry({props, oldProps, changeFlags})
+  // }
 }
+
+CustomSolidPolygonLayer.defaultProps = {
+  getScaleOrigin: {type: 'accessor', value: [-90.210771, 32.3043128]}
+};
 
 class CustomGeoJsonLayer extends GeoJsonLayer {
   constructor(props: any) {
@@ -48,7 +77,10 @@ class CustomGeoJsonLayer extends GeoJsonLayer {
   }
 }
 
-/*
+// CustomGeoJsonLayer.defaultProps = {
+//   getScaleOrigin: {type: 'accessor', value: [0, 0]}
+// };
+
 function loadJSON(url: string, callback: any) {
 
   var xobj = new XMLHttpRequest();
@@ -61,7 +93,6 @@ function loadJSON(url: string, callback: any) {
   };
   xobj.send(null);
 }
-*/
 
 export function GetLayers(params: IMapLayerParams) {
 
@@ -77,7 +108,8 @@ export function GetLayers(params: IMapLayerParams) {
           data: landCover,
           stroked: false,
           getPolygon: (f: any) => f,
-          getFillColor: [0, 0, 0.0, 0.0]
+          getFillColor: [0, 0, 0.0, 0.0],
+          getScaleOrigin: (f: any) => { console.log("PolygonLayer getScaleOrigin"); return [-90.210771, 32.3043128] }
       })
       ,new CustomGeoJsonLayer({
           data: 'http://www.graborenko.org/jackson.json',
@@ -88,8 +120,9 @@ export function GetLayers(params: IMapLayerParams) {
           wireframe: true,
           fp64: true,
           // pointRadiusScale: 10,
-
-          getElevation: (_f: any) => 20,
+    
+          getElevation: (f: any) => 20,
+          getScaleOrigin: (f: any) => { console.log("CustomGeoJsonLayer getScaleOrigin"); return [-90.210771, 32.3043128] },
           // checking the building ids by listening for a change in hashes to determine which building should be highlighted
           getFillColor: (f: any) => {
             const id = `${f.properties["@id"]}`
