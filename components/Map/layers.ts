@@ -49,6 +49,10 @@ class CustomSolidPolygonLayer extends SolidPolygonLayer {
   }
 }
 
+CustomSolidPolygonLayer.defaultProps = {
+  getScaleOrigin: {type: 'accessor', value: [-90.210771, 32.3043128]}
+};
+
 class CustomGeoJsonLayer extends GeoJsonLayer {
   constructor(props: any) {
     super(props);
@@ -105,7 +109,8 @@ export function GetLayers(params: IMapLayerParams) {
           data: landCover,
           stroked: false,
           getPolygon: (f: any) => f,
-          getFillColor: [0, 0, 0.0, 0.0]
+          getFillColor: [0, 0, 0.0, 0.0],
+          getScaleOrigin: (f: any) => { console.log("PolygonLayer getScaleOrigin"); return [-90.210771, 32.3043128] }
       })
       ,new CustomGeoJsonLayer({
           data: 'http://www.graborenko.org/jackson.json',
@@ -117,6 +122,7 @@ export function GetLayers(params: IMapLayerParams) {
           fp64: true,
     
           getElevation: (f: any) => 20,
+          getScaleOrigin: (f: any) => { console.log("CustomGeoJsonLayer getScaleOrigin"); return [-90.210771, 32.3043128] },
           // checking the building ids by listening for a change in hashes to determine which building should be highlighted
           getFillColor: (f: any) => {
             const id = `${f.properties["@id"]}`
