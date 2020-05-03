@@ -5,8 +5,7 @@ const PolygonLayer: any = DeckGLLayers.PolygonLayer;
 const SolidPolygonLayer: any = DeckGLLayers.SolidPolygonLayer;
 const GeoJsonLayer: any = DeckGLLayers.GeoJsonLayer;
 
-// import SolidPolygonLayer from '../solid-polygon-layer/solid-polygon-layer';
-import MapBox from "mapbox-gl";
+import * as MapBox from "mapbox-gl"
 
 const customVertexShader: any = require('../shaders/custom-polygon.glsl.js');
 
@@ -14,8 +13,6 @@ class CustomSolidPolygonLayer extends SolidPolygonLayer {
   constructor(props: any, b: any, c: any) {
     super(props, b, c);
   }
-
-  //TODO find center of a given building
   getShaders(vsShaderText: string) {
     var define_text = "#define IS_SIDE_VERTEX"
     var is_side = vsShaderText.indexOf(define_text) >= 0
@@ -27,42 +24,34 @@ class CustomSolidPolygonLayer extends SolidPolygonLayer {
   initializeState() {
     super.initializeState()
 
-    this.state.attributeManager.addInstanced({
-      instanceScaleOrigins: {
-        size: 2,
-        // accessor: (f: any) => { console.log(this); return [-90.210771, 32.3043128] }
-        accessor: 'getScaleOrigin'
-      }
-    });    
-  }
-  draw({uniforms}: any) {
-    // console.log(this.props.data)
-    super.draw({
-      uniforms:
-        {
-        ...uniforms,
-        scaleFactor: 1.0,
-        scaleOrigin: [-90.210771, 32.3043128]
-        }
-    })
-  }
-  // updateGeometry({props, oldProps, changeFlags}: any) {
-  //   console.log(props, oldProps, changeFlags)
-  //   super.updateGeometry({props, oldProps, changeFlags})
-  // }
-}
+    function get_building_center(f: any) {
+      var sum_lat_long = [0, 0]
+      f.geometry.coordinates[0].forEach((lat_long: any) => {
+        sum_lat_long[0] += lat_long[0]
+        sum_lat_long[1] += lat_long[1]
+      });
+      var inv_num = 1.0 / f.geometry.coordinates[0].length
+      return [sum_lat_long[0] * inv_num, sum_lat_long[1] * inv_num]
+    }
 
-CustomSolidPolygonLayer.defaultProps = {
-  getScaleOrigin: {type: 'accessor', value: [-90.210771, 32.3043128]}
-};
+    this.state.attributeManager.addInstanced({
+      instanceScaleOrigins: { size: 2, accessor: get_building_center }
+    });    
+
+    this.state.attributeManager.add({
+      scaleOrigins: { size: 2, accessor: get_building_center }
+    });    
+
+    this.state.attributeManager.add({
+      scaleFactor: { size: 1, accessor: "getScaleFactor"}
+    });    
+
+  }
+}
 
 class CustomGeoJsonLayer extends GeoJsonLayer {
   constructor(props: any) {
     super(props);
-  }
-  shouldRenderSubLayer(id: any, features: any) {
-    const result = super.shouldRenderSubLayer(id, features)
-    return result
   }
   getSubLayerClass(id: any, defaultConstructor: any) {
     if (id === "polygons-fill") {
@@ -71,15 +60,19 @@ class CustomGeoJsonLayer extends GeoJsonLayer {
     const result = super.getSubLayerClass(id, defaultConstructor)
     return result;
   }
-  renderLayers() {
-    const layers = super.renderLayers()
-    return layers
+  getSubLayerProps(props: any) {
+    const result = super.getSubLayerProps(props)
+    if (props.id === "polygons-fill") {
+      result.getScaleFactor = this.getSubLayerAccessor(this.props.getScaleFactor)
+      result.updateTriggers.getScaleFactor = this.props.updateTriggers.getScaleFactor
+    }
+    return result
   }
 }
 
-// CustomGeoJsonLayer.defaultProps = {
-//   getScaleOrigin: {type: 'accessor', value: [0, 0]}
-// };
+CustomGeoJsonLayer.defaultProps = {
+  getScaleFactor: {type: 'accessor', value: 1}
+};
 
 function loadJSON(url: string, callback: any) {
 
@@ -108,8 +101,7 @@ export function GetLayers(params: IMapLayerParams) {
           data: landCover,
           stroked: false,
           getPolygon: (f: any) => f,
-          getFillColor: [0, 0, 0.0, 0.0],
-          getScaleOrigin: (f: any) => { console.log("PolygonLayer getScaleOrigin"); return [-90.210771, 32.3043128] }
+          getFillColor: [0, 0, 0.0, 0.0]
       })
       ,new CustomGeoJsonLayer({
           data: 'http://www.graborenko.org/jackson.json',
@@ -119,10 +111,8 @@ export function GetLayers(params: IMapLayerParams) {
           extruded: true,
           wireframe: true,
           fp64: true,
-          // pointRadiusScale: 10,
     
           getElevation: (f: any) => 20,
-          getScaleOrigin: (f: any) => { console.log("CustomGeoJsonLayer getScaleOrigin"); return [-90.210771, 32.3043128] },
           // checking the building ids by listening for a change in hashes to determine which building should be highlighted
           getFillColor: (f: any) => {
             const id = `${f.properties["@id"]}`
@@ -131,9 +121,15 @@ export function GetLayers(params: IMapLayerParams) {
             }
             return [0, 255, 0, 255.0]
           },
+          getScaleFactor: (f: any) => {
+            console.log("getScaleFactor called")
+            //return 0.5
+            return Math.random()
+          },
           getLineColor: [255, 255, 255],
           updateTriggers: {
              getFillColor: [params.hash]
+             ,getScaleFactor: [params.hash]
           },
           pickable: true,
           onHover: () => {},
