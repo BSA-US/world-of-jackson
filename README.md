@@ -86,6 +86,20 @@ World of Jackson is an interactive feature, accessed on its own and from the [Du
 
     #### Run the Dual Power App with your local API
 
+<<<<<<< HEAD
     ```sh
     now dev
     ```
+=======
+## Setup
+
+Clone the repo, then run these scripts:
+npm install
+npm run watch
+
+This will set up an automatic build process that outputs to the /web directory whenever the source code changes. Currently, index.html is checked into the /web dir but in the future it should be copied from /src and templated with cache-busting names for bundle.js and vendor.js.
+
+To run, simply execute /web/index.html in your browser of choice.
+
+"jackson.json" in the root dir is a sample geojson file used as part of the demo.
+>>>>>>> b7b2c87... next js again
