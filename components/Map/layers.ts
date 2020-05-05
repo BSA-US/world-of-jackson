@@ -74,18 +74,6 @@ CustomGeoJsonLayer.defaultProps = {
   getScaleFactor: {type: 'accessor', value: 1}
 };
 
-function loadJSON(url: string, callback: any) {
-
-  var xobj = new XMLHttpRequest();
-  xobj.overrideMimeType("application/json");
-  xobj.open('GET', url, true);
-  xobj.onreadystatechange = function () {
-      if (xobj.readyState == 4 && xobj.status == 200) {
-          callback(JSON.parse(xobj.responseText));
-      }
-  };
-  xobj.send(null);
-}
 
 export function GetLayers(params: IMapLayerParams) {
 
