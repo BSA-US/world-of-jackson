@@ -100,7 +100,7 @@ export function GetLayers(params: IMapLayerParams) {
           wireframe: true,
           fp64: true,
     
-          getElevation: (f: any) => 20,
+          getElevation: () => 20,
           // checking the building ids by listening for a change in hashes to determine which building should be highlighted
           getFillColor: (f: any) => {
             const id = `${f.properties["@id"]}`
@@ -109,7 +109,7 @@ export function GetLayers(params: IMapLayerParams) {
             }
             return [0, 255, 0, 255.0]
           },
-          getScaleFactor: (f: any) => {
+          getScaleFactor: () => {
             console.log("getScaleFactor called")
             //return 0.5
             return Math.random()
