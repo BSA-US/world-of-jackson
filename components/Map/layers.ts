@@ -7,7 +7,7 @@ const GeoJsonLayer: any = DeckGLLayers.GeoJsonLayer;
 
 import * as MapBox from "mapbox-gl"
 
-const customVertexShader: any = require('../shaders/custom-polygon.glsl.js');
+const customVertexShader: any = require('../../src/shaders/custom-polygon.ts');
 
 class CustomSolidPolygonLayer extends SolidPolygonLayer {
   constructor(props: any, b: any, c: any) {
