@@ -1,7 +1,7 @@
 import type { FunctionComponent } from 'react'
 import type {
-  IMapboxCallbackParams,
-  MapboxCallback
+  IOnBuildingClickedParams,
+  OnBuildingClicked
 } from '~/types/components/Map'
 import { useState } from 'react'
 import Head from 'next/head'
@@ -50,39 +50,42 @@ const tour: ITourNode[] = [
 
 const Index: FunctionComponent = () => {
   const [selectedTourNode, setSelectedTourNode] = useState<ITourNode | null>(tour[0])
-  const [infoText, setInfoText] = useState<string | null>(null)
-  const callbacks: Array<MapboxCallback> = []
-  const addCallback = (callback: MapboxCallback) => callbacks.push(callback)
+  let flyToListeners: Array<OnBuildingClicked> = []
+  const addFlyToListener = (onBuildingClicked: OnBuildingClicked) => {
+    // TODO(odbol): figure out a better way to set state on the map
+    flyToListeners = [];
+    flyToListeners.push(onBuildingClicked);
+  };
+
+  const selectTour = (tour: ITourNode) => {
+    const { location, buildingIds } = tour;
+    setSelectedTourNode(tour);
+    flyTo({ location, buildingIds, buildingProperty: null });
+  }
+
+  const onBuildingClicked =({
+    buildingProperty
+  }: IOnBuildingClickedParams): void => {
+    if (!!buildingProperty) {
+      console.log("building clicked", buildingProperty)
+
+      // TODO(fuego): remove the @ from the id attribute... not sure how that got there since it's not in the json.
+      const clickedBuildingId = buildingProperty['@id'];
+      if (clickedBuildingId) {
+        const clickedTour = tour.find(tour => tour.buildingIds.includes(clickedBuildingId));
+        if (clickedTour) {
+          selectTour(clickedTour);
+        }
+      }
+    }
+  }
 
   const flyTo =({
     location,
-    buildingProperty,
     buildingIds = []
-  }: IMapboxCallbackParams): void => {
-    if (!!buildingProperty) {
-      console.log("building clicked", buildingProperty)
-      setInfoText(buildingProperty.info ? buildingProperty.info : null)
-      return
-    }
-    setInfoText(null)
-    callbacks.forEach(callback => callback({ location, buildingIds }))
+  }: IOnBuildingClickedParams): void => {
+    flyToListeners.forEach(onBuildingClicked => onBuildingClicked({ location, buildingIds }));
   }
-
-  const handleTourClick = (node: ITourNode) => {
-    const { location, buildingIds } = node
-    setSelectedTourNode(node)
-    flyTo({ location, buildingIds, buildingProperty: null })
-  }
-
-  const InfoText: FunctionComponent = () =>
-    <div style={{
-      position: 'absolute',
-      right: '100px',
-      bottom: '100px',
-      backgroundColor: 'white'
-    }}>
-      { infoText || '' }
-    </div>
 
   return (
   <BaseLayout>
@@ -92,17 +95,17 @@ const Index: FunctionComponent = () => {
     <main className={cn.index}>
       <div style={{ position: "absolute", left: 0, top: 0, right: 0, bottom: 0, overflow: "hidden" }}>
         <DynamicMap
-          callbackRegistration={addCallback}
-          callback={flyTo}
+          flyToRegistration={addFlyToListener}
+          onBuildingClicked={onBuildingClicked}
           selectedTourNode={selectedTourNode}
         />
       </div>
+
       { selectedTourNode &&
         <TourModal selectedTourNode={ selectedTourNode } />
       }
-      <InfoText />
 
-      <TourBar tour={ tour } handleTourClick={ handleTourClick } selectedTourNode={ selectedTourNode } />
+      <TourBar tour={ tour } handleTourClick={ selectTour } selectedTourNode={ selectedTourNode } />
     </main>
   </BaseLayout>
   )

@@ -1,7 +1,7 @@
 import type { FunctionComponent } from 'react'
 import type {
-  IMapboxCallbackParams,
-  MapboxCallback,
+  IOnBuildingClickedParams,
+  OnBuildingClicked,
   IMapLayerParams
 } from '~/types/components/Map'
 import { useState } from 'react'
@@ -21,15 +21,15 @@ export const MapPopup: FunctionComponent = () =>
 
 interface IMapProps {
   className?: string
-  callbackRegistration: (callback: MapboxCallback) => void
-  callback: MapboxCallback
+  flyToRegistration: (onBuildingClicked: OnBuildingClicked) => void
+  onBuildingClicked: OnBuildingClicked
   selectedTourNode: ITourNode | null
 }
 
 const Map: FunctionComponent<IMapProps> = ({
   className = '',
-  callbackRegistration,
-  callback,
+  flyToRegistration,
+  onBuildingClicked,
   selectedTourNode
 }) => {
   const [hash, setHash] = useState<number>(0)
@@ -49,11 +49,7 @@ const Map: FunctionComponent<IMapProps> = ({
     bearing: 45
   })
 
-  callbackRegistration(({ location, buildingIds }: IMapboxCallbackParams) => {
-    const buildingObj: { [key: string]: true } = {}
-    buildingIds && buildingIds.forEach((id: string | number) => {
-      buildingObj[`${id}`] = true
-    })
+  flyToRegistration(({ location }: IOnBuildingClickedParams) => {
     // update hash
     setHash(hash + 1);
     //setBuildingIds(buildingObj);
@@ -62,7 +58,7 @@ const Map: FunctionComponent<IMapProps> = ({
       longitude: location.lng,
       latitude: location.lat,
       zoom: 17,
-      transitionDuration: 1000,
+      transitionDuration: 450,
       transitionInterpolator: new FlyToInterpolator()
     })
   })
@@ -76,7 +72,7 @@ const Map: FunctionComponent<IMapProps> = ({
     zoom: viewState.zoom,
     hash,
     buildingIds: buildingIds,
-    callback
+    onBuildingClicked
   }
 
   return <div className={`${cn.map} ${className}`}>
@@ -98,7 +94,7 @@ const Map: FunctionComponent<IMapProps> = ({
       />
     </DeckGLReact.DeckGL>
     <div style={{ position: "absolute", left: 0, bottom: 0, zIndex: 1 }}>
-      <button onClick={() => callback({
+      <button onClick={() => onBuildingClicked({
         location: new LngLat(153.0437, -27.497925),
         buildingProperty: null
       })}>
