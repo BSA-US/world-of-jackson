@@ -6,6 +6,8 @@ If you'd like to be actively involved with the team, you can [contact us to join
 
 ## Rules for pull requests
 
+We do all our development on the `dev` branch.
+
 The `master` branch has the following safety rules applied for pull requests, which _**all contributors must follow**:_
 
 - Signed commits
