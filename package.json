@@ -7,6 +7,7 @@
   ],
   "license": "MIT",
   "scripts": {
+    "contentful-typescript-codegen": "contentful-typescript-codegen --output types/db/contentful.d.ts",
     "dev": "next -p 3001",
     "dev-remote": "env API_HOST=https://world-of-jackson-git-dev.blacksocialists.now.sh next",
     "build": "next build",
@@ -47,6 +48,10 @@
     "@types/react-map-gl": "^5.2.3",
     "babel-loader": "^8.1.0",
     "babel-plugin-react-require": "^3.1.3",
+    "contentful-management": "^5.26.2",
+    "contentful-typescript-codegen": "^3.2.1",
+    "dotenv": "^8.2.0",
+    "prettier": "^2.0.5",
     "typescript": "^3.8.3"
   }
 }

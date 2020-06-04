@@ -1,9 +1,9 @@
-import type { FunctionComponent } from 'react'
+import { FunctionComponent as IFunctionComponent } from 'react'
 import Head from 'next/head'
 import '~/styles/_global.styl'
 import '~/styles/layouts/base.styl'
 
-const BaseLayout: FunctionComponent = ({ children }) => <>
+const BaseLayout: IFunctionComponent = ({ children }) => <>
   <Head>
     <link
       rel='stylesheet'
