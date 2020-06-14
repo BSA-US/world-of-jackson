@@ -3,7 +3,7 @@ import type {
   IOnBuildingClickedParams,
   OnBuildingClicked
 } from '~/types/components/Map'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
 import { BaseLayout } from '~/layouts'
@@ -11,6 +11,8 @@ import cn from '~/styles/pages/index.styl'
 import TourBar from '~/components/TourBar/TourBar'
 import TourModal from '~/components/TourModal/TourModal'
 import { ITourNode } from '~/components/TourBar/TourBar'
+import { objects } from '~/db'
+// import { ITourNodeFields } from '~/types/db/contentful'
 
 const DynamicMap = dynamic(() => import('~/components/Map'), {
   loading: () => <p>Loading...</p>,
@@ -27,6 +29,7 @@ export class LngLat {
   }
 }
 
+/*
 const tour: ITourNode[] = [
   {
     label: "start",
@@ -46,10 +49,10 @@ const tour: ITourNode[] = [
     location: new LngLat(-90.2088766, 32.3039644),
     buildingIds: ["building_b", "building_c"]
   }
-]
+]*/
 
 const Index: FunctionComponent = () => {
-  const [selectedTourNode, setSelectedTourNode] = useState<ITourNode | null>(tour[0])
+  const [selectedTourIndex, setSelectedTourIndex] = useState<number | null>(null)
   let flyToListeners: Array<OnBuildingClicked> = []
   const addFlyToListener = (onBuildingClicked: OnBuildingClicked) => {
     // TODO(odbol): figure out a better way to set state on the map
@@ -57,9 +60,34 @@ const Index: FunctionComponent = () => {
     flyToListeners.push(onBuildingClicked);
   };
 
-  const selectTour = (tour: ITourNode) => {
-    const { location, buildingIds } = tour;
-    setSelectedTourNode(tour);
+  // console.log(objects.Tour.all)
+  const tour: ITourNode[] = objects.Tour.all.length == 0 ? [] :
+    objects.Tour.all[0].fields.tourNodes.map((nodeObj: any) : ITourNode => {
+      //const { node } = nodeObj
+      const node: any = nodeObj.fields
+      console.log("node", node)
+      return {
+        label: node.name,
+        description: node.description,
+        location: new LngLat(node.zoomPoint.lon, node.zoomPoint.lat),
+        buildingIds: []
+      }
+    })
+  // console.log("tour", tour)
+  useEffect(() => {
+    Promise.all([objects.Tour.fetchPromise, objects.TourNode.fetchPromise]).then(() => {
+      // console.log("sdfsfdf", objects.Tour.all, objects.TourNode.all)
+      // setHash(hash + 1);
+      setSelectedTourIndex(0)
+    })
+  }, []);
+
+  const selectTour = (tourNode: ITourNode) => {
+    const { location, buildingIds } = tourNode;
+    // setSelectedTourNode(tour);
+    // tour.
+    const nodeIndex = tour.findIndex(node => node.label == tourNode.label);
+    setSelectedTourIndex(nodeIndex >= 0 ? nodeIndex : null)
     flyTo({ location, buildingIds, buildingProperty: null });
   }
 
@@ -69,10 +97,9 @@ const Index: FunctionComponent = () => {
     if (!!buildingProperty) {
       console.log("building clicked", buildingProperty)
 
-      // TODO(fuego): remove the @ from the id attribute... not sure how that got there since it's not in the json.
-      const clickedBuildingId = buildingProperty['@id'];
+      const clickedBuildingId = buildingProperty['id'];
       if (clickedBuildingId) {
-        const clickedTour = tour.find(tour => tour.buildingIds.includes(clickedBuildingId));
+        const clickedTour = tour.find(tourNode => tourNode.buildingIds.includes(clickedBuildingId));
         if (clickedTour) {
           selectTour(clickedTour);
         }
@@ -86,6 +113,8 @@ const Index: FunctionComponent = () => {
   }: IOnBuildingClickedParams): void => {
     flyToListeners.forEach(onBuildingClicked => onBuildingClicked({ location, buildingIds }));
   }
+
+  const selectedTourNode : ITourNode | null = (selectedTourIndex !== null) && tour.length > selectedTourIndex ? tour[selectedTourIndex] : null
 
   return (
   <BaseLayout>

@@ -172,10 +172,10 @@ export interface IProject extends Entry<IProjectFields> {
 
 export interface ITourFields {
   /** Name */
-  name?: string | undefined;
+  name: string;
 
   /** TourNodes */
-  tourNodes?: Entry<{ [fieldId: string]: unknown }>[] | undefined;
+  tourNodes: Entry<{ [fieldId: string]: unknown }>[];
 }
 
 /** A tour that a user can go on */
@@ -199,22 +199,25 @@ export interface ITour extends Entry<ITourFields> {
 
 export interface ITourNodeFields {
   /** Order */
-  order?: number | undefined;
+  order: number;
 
   /** Name */
-  name?: string | undefined;
+  name: string;
+
+  /** ZoomPoint */
+  zoomPoint: { lat: number; lon: number };
 
   /** Description */
   description?: Document | undefined;
 
   /** Zones */
-  zones?: Entry<{ [fieldId: string]: unknown }>[] | undefined;
+  zones: Entry<{ [fieldId: string]: unknown }>[];
 
   /** Lots */
-  lots?: Entry<{ [fieldId: string]: unknown }>[] | undefined;
+  lots: Entry<{ [fieldId: string]: unknown }>[];
 
   /** Buildings */
-  buildings?: Entry<{ [fieldId: string]: unknown }>[] | undefined;
+  buildings: Entry<{ [fieldId: string]: unknown }>[];
 }
 
 /** A stop along a tour */
