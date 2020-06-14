@@ -24,6 +24,9 @@ export interface IBuildingFields {
 
   /** Body */
   body?: Document | undefined;
+
+  /** GeoJson */
+  geoJson?: Record<string, any> | undefined;
 }
 
 export interface IBuilding extends Entry<IBuildingFields> {
@@ -167,6 +170,72 @@ export interface IProject extends Entry<IProjectFields> {
   };
 }
 
+export interface ITourFields {
+  /** Name */
+  name?: string | undefined;
+
+  /** TourNodes */
+  tourNodes?: Entry<{ [fieldId: string]: unknown }>[] | undefined;
+}
+
+/** A tour that a user can go on */
+
+export interface ITour extends Entry<ITourFields> {
+  sys: {
+    id: string;
+    type: string;
+    createdAt: string;
+    updatedAt: string;
+    locale: string;
+    contentType: {
+      sys: {
+        id: "tour";
+        linkType: "ContentType";
+        type: "Link";
+      };
+    };
+  };
+}
+
+export interface ITourNodeFields {
+  /** Order */
+  order?: number | undefined;
+
+  /** Name */
+  name?: string | undefined;
+
+  /** Description */
+  description?: Document | undefined;
+
+  /** Zones */
+  zones?: Entry<{ [fieldId: string]: unknown }>[] | undefined;
+
+  /** Lots */
+  lots?: Entry<{ [fieldId: string]: unknown }>[] | undefined;
+
+  /** Buildings */
+  buildings?: Entry<{ [fieldId: string]: unknown }>[] | undefined;
+}
+
+/** A stop along a tour */
+
+export interface ITourNode extends Entry<ITourNodeFields> {
+  sys: {
+    id: string;
+    type: string;
+    createdAt: string;
+    updatedAt: string;
+    locale: string;
+    contentType: {
+      sys: {
+        id: "tourNode";
+        linkType: "ContentType";
+        type: "Link";
+      };
+    };
+  };
+}
+
 export interface IZoneFields {
   /** Name */
   name?: string | undefined;
@@ -207,6 +276,8 @@ export type CONTENT_TYPE =
   | "lot"
   | "map"
   | "project"
+  | "tour"
+  | "tourNode"
   | "zone";
 
 export type LOCALE_CODE = "en-US";
