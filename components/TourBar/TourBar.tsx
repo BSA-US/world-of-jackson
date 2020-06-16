@@ -5,6 +5,7 @@ import TourNavButton from './TourNavButton';
 import { MobileScreenSize } from '../constants';
 import UITheme from 'styled-components'; 
 import { LngLat } from '~/pages';
+import { Document } from '@contentful/rich-text-types';
 
 const NavBar = UITheme.div`
     position: absolute;
@@ -35,7 +36,7 @@ const NavBar = UITheme.div`
 // TODO(odbol): move this to a db/models directory?
 export interface ITourNode {
   label: string,
-  description: string,
+  description: Document,
   location: LngLat
   buildingIds: (string | number)[]
 }

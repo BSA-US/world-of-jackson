@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@babel/plugin-transform-typescript": "^7.9.4",
+    "@contentful/rich-text-react-renderer": "^13.4.0",
     "@material-ui/core": "^4.10.1",
     "@material-ui/icons": "^4.9.1",
     "@types/styled-components": "^5.1.0",
