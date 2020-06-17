@@ -1,9 +1,10 @@
 import React from 'react'
 import type { FunctionComponent } from 'react'
 import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
+import { BLOCKS } from '@contentful/rich-text-types';
 import { ITourNode } from '../TourBar/TourBar';
 
-import UITheme from 'styled-components'; 
+import UITheme from 'styled-components';
 // var sanitizeHtml: any = require('sanitize-html');
 
 const InfoArea = UITheme.div`
@@ -22,18 +23,22 @@ const InfoArea = UITheme.div`
     margin: 0 -200px 0 0;
 `
 
+const EmbeddedImage = UITheme.img`
+  width: 100%;
+`
 
 const TourModal: FunctionComponent<{ selectedTourNode: ITourNode | null }> =
   ({ selectedTourNode }) => {
 
-    const options = {
-      // renderNode: {
-      //     [BLOCKS.EMBEDDED_ASSET]: ({ data: { target: { fields }}}) =>
-      //         `<img src="${fields.file.url}" height="${fields.file.details.image.height}" width="${fields.file.details.image.width}" alt="${fields.description}"/>`,
-      // },
-    };    
-    console.log(selectedTourNode ? selectedTourNode.description : "");
-    //let description = selectedTourNode ? sanitizeHtml(JSON.stringify(selectedTourNode.description)) : "";
+    const options: any = {
+      renderNode: {
+          [BLOCKS.EMBEDDED_ASSET]: (input: any) => {
+            const fields: any = input.data.target.fields
+            /// alternative rendering:
+            //return <img src={ fields.file.url} height={fields.file.details.image.height} width={fields.file.details.image.width} alt={fields.description} />;
+            return <EmbeddedImage src={ fields.file.url} alt={fields.description} />;
+      }},
+    };
     let description = selectedTourNode ? documentToReactComponents(selectedTourNode.description, options) : null;
       return (
         <InfoArea>

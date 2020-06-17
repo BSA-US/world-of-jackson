@@ -86,7 +86,9 @@ export function GetLayers(params: IMapLayerParams) {
   /// creating layers for a base, and to input geojson(our map data)
   const buildingData = {
     type: "FeatureCollection",
-    features: objects.Building.all.filter((x: any) => x.fields.geoJson).map((x: any) => x.fields.geoJson)
+    features: objects.Building.all.filter((building: any) => building.fields.geoJson).map((building: any) => {
+      return { ...building.fields.geoJson, properties: { ...building.fields.geoJson.properties, id: building.fields.name } }
+    })
   }
 
   const layers = [

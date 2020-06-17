@@ -29,6 +29,8 @@ const NavButton = UITheme.button`
 /// example of extending a style:
 /// const BackNavButton = UITheme(NavButton)``
 
+console.log("Warning of 'Expected server HTML to contain a matching <svg> in <button>' below is caused by this next.js bug:", "https://github.com/vercel/next.js/issues/5347")
+
 const TourNavButton: FunctionComponent<{isForward: boolean, onClick: () => void}> =
     ({isForward, onClick }) => {
         if (isForward) {
