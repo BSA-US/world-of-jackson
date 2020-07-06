@@ -4,6 +4,7 @@ import { documentToReactComponents } from "@contentful/rich-text-react-renderer"
 import { BLOCKS } from "@contentful/rich-text-types";
 import { ITourNode } from "../TourBar/TourBar";
 import { useState } from "react";
+import { useSwipeable } from 'react-swipeable';
 
 import UITheme from "styled-components";
 import mediaQueries from "../../media-queries/mediaQueries";
@@ -59,11 +60,27 @@ const TourModal: FunctionComponent<{ selectedTourNode: ITourNode | null }> =
     };
     let description = selectedTourNode ? documentToReactComponents(selectedTourNode.description, options) : null;
     const style = selectedTourNode && infoModalActive ? {} : { bottom: "95%" }
+
+    const handlers = useSwipeable({
+      onSwipedUp: () => {
+        setInfoModalActive(false)
+      }
+      ,onSwipedDown: () => {
+        setInfoModalActive(true)
+      }
+    })
+
     return (
-      <InfoArea style={style} onClick={ ()=>{ setInfoModalActive(!infoModalActive) } }>
+      <InfoArea {...handlers} style={style}>
         { description }
       </InfoArea>
     )
+
+    // return (
+    //   <InfoArea style={style} onClick={ ()=>{ setInfoModalActive(!infoModalActive) } }>
+    //     { description }
+    //   </InfoArea>
+    // )
   }
 
 export default TourModal
