@@ -9,9 +9,12 @@ import { useSwipeable } from 'react-swipeable';
 import UITheme from "styled-components";
 import mediaQueries from "../../media-queries/mediaQueries";
 const media = mediaQueries;
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 
 const modalBottomClearance: number = 200
 const modalWidthRadius: string = '25%'
+const modalBorderRadius: number = 20
 const InfoArea = UITheme.div`
     background-color: #0f1007;
     color: #ddd;
@@ -36,13 +39,28 @@ const InfoArea = UITheme.div`
     right: ${modalWidthRadius};
     bottom: ${modalBottomClearance}px;
     padding-top: ${modalBottomClearance + 16}px;
-    border-radius: 20px;
+    border-radius: ${modalBorderRadius}px;
 
     transition: bottom 0.5s ease-in-out;
 `
 
 const EmbeddedImage = UITheme.img`
   width: 100%;
+`
+
+const PullControl = UITheme.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  border-bottom-right-radius: ${modalBorderRadius}px;
+  border-bottom-left-radius: ${modalBorderRadius}px;
+  transition: background-color 0.2s ease-in-out;
+  &:hover {
+    background-color: rgb(0,120,0);
+  }
 `
 
 const TourModal: FunctionComponent<{ selectedTourNode: ITourNode | null }> =
@@ -73,14 +91,11 @@ const TourModal: FunctionComponent<{ selectedTourNode: ITourNode | null }> =
     return (
       <InfoArea {...handlers} style={style}>
         { description }
+        <PullControl onClick={ ()=> setInfoModalActive(!infoModalActive) }>
+          { infoModalActive ? <ArrowDropUpIcon/> : <ArrowDropDownIcon/> }
+        </PullControl>
       </InfoArea>
     )
-
-    // return (
-    //   <InfoArea style={style} onClick={ ()=>{ setInfoModalActive(!infoModalActive) } }>
-    //     { description }
-    //   </InfoArea>
-    // )
   }
 
 export default TourModal
