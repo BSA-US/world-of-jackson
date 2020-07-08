@@ -105,7 +105,7 @@ const Index: FunctionComponent = () => {
       {/* head is set per-page */}
     </Head>
     <main className={cn.index}>
-      <div style={{ position: "absolute", left: 0, top: 0, right: 0, bottom: 0, overflow: "hidden" }}>
+      <div style={{ position: "absolute", left: 0, top: 0, right: 0, height: '100vh', overflow: "hidden" }}>
         <DynamicMap
           flyToRegistration={addFlyToListener}
           onBuildingClicked={onBuildingClicked}
