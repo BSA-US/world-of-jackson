@@ -71,9 +71,11 @@ const TourModal: FunctionComponent<{ selectedTourNode: ITourNode | null }> =
     })
 
     return (
-      <InfoArea {...handlers} style={style}>
-        { description }
-      </InfoArea>
+      <div style={{ overflow: "hidden" }}>
+        <InfoArea {...handlers} style={style}>
+          { description }
+        </InfoArea>
+      </div>
     )
 
     // return (
