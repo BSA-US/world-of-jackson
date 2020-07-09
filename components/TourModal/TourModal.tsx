@@ -18,7 +18,7 @@ const modalBorderRadius: number = 20
 const InfoArea = UITheme.div`
     background-color: #0f1007;
     color: #ddd;
-    padding: 16px;
+    padding: 16px 10%;
 
     ${media.desktop} {
       // put desktop specific stuff in here
@@ -33,7 +33,8 @@ const InfoArea = UITheme.div`
     position: absolute;
     font-size: 0.8em;
     line-height: 1em;
-    
+    overflow: overlay;
+
     height: 100%;
     left: ${modalWidthRadius};
     right: ${modalWidthRadius};
@@ -42,6 +43,10 @@ const InfoArea = UITheme.div`
     border-radius: ${modalBorderRadius}px;
 
     transition: bottom 0.5s ease-in-out;
+
+    p {
+      text-align: justify;
+    }
 `
 
 const EmbeddedImage = UITheme.img`
@@ -63,18 +68,44 @@ const PullControl = UITheme.div`
   }
 `
 
+const Header1 = UITheme.h1`
+  text-align: center;
+  font-size: 64px;
+  line-height: 64px;
+`
+
+const Header2 = UITheme.h2`
+  text-align: center;
+  font-size: 36px;
+  line-height: 36px;
+  margin-bottom: 3%;
+`
+
 const TourModal: FunctionComponent<{ selectedTourNode: ITourNode | null }> =
   ({ selectedTourNode }) => {
 
     const [infoModalActive, setInfoModalActive] = useState<boolean>(true)
+
+    const mediaData: any = { headers: [], images: [] }
     const options: any = {
       renderNode: {
-          [BLOCKS.EMBEDDED_ASSET]: (input: any) => {
-            const fields: any = input.data.target.fields
-            /// alternative rendering:
-            //return <img src={ fields.file.url} height={fields.file.details.image.height} width={fields.file.details.image.width} alt={fields.description} />;
-            return <EmbeddedImage src={ fields.file.url} alt={fields.description} />;
-      }},
+        [BLOCKS.HEADING_1]: (input: any) => {
+          mediaData.headers.push(<Header1 key={ mediaData.headers.length }>{input.content[0].value}</Header1>)
+          return null
+        },
+        [BLOCKS.HEADING_2]: (input: any) => {
+          mediaData.headers.push(<Header2 key={ mediaData.headers.length }>{input.content[0].value}</Header2>)
+          return null
+        },
+        [BLOCKS.EMBEDDED_ASSET]: (input: any) => {
+          const fields: any = input.data.target.fields
+          /// alternative rendering:
+          //return <img src={ fields.file.url} height={fields.file.details.image.height} width={fields.file.details.image.width} alt={fields.description} />;
+          //return <EmbeddedImage src={ fields.file.url} alt={fields.description} />;
+          mediaData.images.push(<EmbeddedImage key={ fields.file.url } src={ fields.file.url } alt={ fields.description } />)
+          return null
+        }
+      },
     };
     let description = selectedTourNode ? documentToReactComponents(selectedTourNode.description, options) : null;
     const style = selectedTourNode && infoModalActive ? {} : { bottom: "95%" }
@@ -88,9 +119,15 @@ const TourModal: FunctionComponent<{ selectedTourNode: ITourNode | null }> =
       }
     })
 
+    // const imageElements = mediaData.images.map
+
     return (
       <InfoArea {...handlers} style={style}>
-        { description }
+        { mediaData.headers }
+        { mediaData.images }
+        <div style={{ overflowY: "auto"}}>
+          { description }
+        </div>
         <PullControl onClick={ ()=> setInfoModalActive(!infoModalActive) }>
           { infoModalActive ? <ArrowDropUpIcon/> : <ArrowDropDownIcon/> }
         </PullControl>
