@@ -13,12 +13,14 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 
 const modalBottomClearance: number = 200
-const modalWidthRadius: string = '25%'
-const modalBorderRadius: number = 20
+const modalWidthRadius: string = '15%'
+const modalSidePadding: string = '10%'
+const modalBorderRadius: number = 32
+const imageMaxHeight: string = "300px"
 const InfoArea = UITheme.div`
     background-color: #0f1007;
     color: #ddd;
-    padding: 16px 10%;
+    padding: ${modalBorderRadius}px ${modalSidePadding};
 
     ${media.desktop} {
       // put desktop specific stuff in here
@@ -33,13 +35,17 @@ const InfoArea = UITheme.div`
     position: absolute;
     font-size: 0.8em;
     line-height: 1em;
-    overflow: overlay;
+    //overflow: overlay;
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
 
     height: 100%;
     left: ${modalWidthRadius};
     right: ${modalWidthRadius};
     bottom: ${modalBottomClearance}px;
-    padding-top: ${modalBottomClearance + 16}px;
+    padding-top: ${modalBottomClearance + modalBorderRadius}px;
     border-radius: ${modalBorderRadius}px;
 
     transition: bottom 0.5s ease-in-out;
@@ -50,7 +56,9 @@ const InfoArea = UITheme.div`
 `
 
 const EmbeddedImage = UITheme.img`
+  height: 100%;
   width: 100%;
+  object-fit: contain;
 `
 
 const PullControl = UITheme.div`
@@ -81,6 +89,10 @@ const Header2 = UITheme.h2`
   margin-bottom: 3%;
 `
 
+const ModalText = UITheme.div`
+  overflow: auto;
+`
+
 const TourModal: FunctionComponent<{ selectedTourNode: ITourNode | null }> =
   ({ selectedTourNode }) => {
 
@@ -108,7 +120,7 @@ const TourModal: FunctionComponent<{ selectedTourNode: ITourNode | null }> =
       },
     };
     let description = selectedTourNode ? documentToReactComponents(selectedTourNode.description, options) : null;
-    const style = selectedTourNode && infoModalActive ? {} : { bottom: "95%" }
+    const style = selectedTourNode && infoModalActive ? {} : { bottom:  `calc(100% - ${modalBorderRadius}px)` }
 
     const handlers = useSwipeable({
       onSwipedUp: () => {
@@ -118,16 +130,17 @@ const TourModal: FunctionComponent<{ selectedTourNode: ITourNode | null }> =
         setInfoModalActive(true)
       }
     })
-
-    // const imageElements = mediaData.images.map
-
     return (
       <InfoArea {...handlers} style={style}>
-        { mediaData.headers }
-        { mediaData.images }
-        <div style={{ overflowY: "auto"}}>
-          { description }
+        <div>
+          { mediaData.headers }
         </div>
+        <div style={{ maxHeight: imageMaxHeight }}>
+          { mediaData.images }
+        </div>
+        <ModalText>
+          { description }
+        </ModalText>
         <PullControl onClick={ ()=> setInfoModalActive(!infoModalActive) }>
           { infoModalActive ? <ArrowDropUpIcon/> : <ArrowDropDownIcon/> }
         </PullControl>
