@@ -14,7 +14,9 @@ import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 
 const modalBottomClearance: number = 200
 const modalWidthRadius: string = '15%'
+const modalWidthRadiusMobile: string = '75px'
 const modalSidePadding: string = '10%'
+const modalSidePaddingMobile: string = '16px'
 const modalBorderRadius: number = 32
 const imageMaxHeight: string = "300px"
 const InfoArea = UITheme.div`
@@ -26,8 +28,6 @@ const InfoArea = UITheme.div`
       // put desktop specific stuff in here
     }
     ${media.tablet} {
-    }
-    ${media.phone} {
     }
     ${media.smallPhone} {
     }
@@ -44,6 +44,13 @@ const InfoArea = UITheme.div`
     height: 100%;
     left: ${modalWidthRadius};
     right: ${modalWidthRadius};
+    ${media.phone} {
+      left: ${modalWidthRadiusMobile};
+      right: 0;
+      padding-left: ${modalSidePaddingMobile};
+      padding-right: ${modalSidePaddingMobile};
+    }
+
     bottom: ${modalBottomClearance}px;
     padding-top: ${modalBottomClearance + modalBorderRadius}px;
     border-radius: ${modalBorderRadius}px;
@@ -113,7 +120,6 @@ const TourModal: FunctionComponent<{ selectedTourNode: ITourNode | null }> =
           const fields: any = input.data.target.fields
           /// alternative rendering:
           //return <img src={ fields.file.url} height={fields.file.details.image.height} width={fields.file.details.image.width} alt={fields.description} />;
-          //return <EmbeddedImage src={ fields.file.url} alt={fields.description} />;
           mediaData.images.push(<EmbeddedImage key={ fields.file.url } src={ fields.file.url } alt={ fields.description } />)
           return null
         }
