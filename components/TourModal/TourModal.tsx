@@ -13,7 +13,7 @@ import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 
 const modalBottomClearance: number = 200
 const modalWidthRadius: string = '15%'
-const modalWidthRadiusMobile: string = '75px'
+// const modalWidthRadiusMobile: string = '75px'
 const modalSidePadding: string = '10%'
 const modalSidePaddingMobile: string = '16px'
 const modalBorderRadius: number = 32
@@ -37,7 +37,7 @@ const InfoArea = UITheme.div`
 
     height: 100%;
     ${mediaQueries.phone} {
-      left: ${modalWidthRadiusMobile};
+      left: 0;
       right: 0;
       padding-left: ${modalSidePaddingMobile};
       padding-right: ${modalSidePaddingMobile};

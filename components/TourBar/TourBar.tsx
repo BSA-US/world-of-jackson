@@ -10,6 +10,14 @@ import mediaQueries from "../../media-queries/mediaQueries";
 const NavBar = UITheme.div`
     position: absolute;
 
+    /// row only design:
+    flex-direction: row;
+    left: 8px;
+    right: 8px;
+    height: 80px;
+    bottom: 16px;
+
+    /* /// row and column on phone design
     ${mediaQueries.notPhone} {
       flex-direction: row;
       left: 8px;
@@ -24,13 +32,12 @@ const NavBar = UITheme.div`
       top: 8px;
       bottom: 32px;
     }
+    */
 
     display: flex;
     justify-content: space-between;
     // justify-content: center;
     align-items: center;
-   
-
 `;
 
 // TODO(odbol): move this to a db/models directory?

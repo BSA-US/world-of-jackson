@@ -4,10 +4,9 @@ import UITheme from 'styled-components';
 import ArrowLeftIcon from '@material-ui/icons/ArrowLeft';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 
-import mediaQueries from "../../media-queries/mediaQueries";
-
 const NavButton = UITheme.button`
     display: inline-block;
+    flex-shrink: 0;
     background-color: black;
     color: white;
     border-radius: 50%;
@@ -21,9 +20,6 @@ const NavButton = UITheme.button`
     }
     white-space: nowrap;
     overflow: hidden;
-    ${mediaQueries.phone} {
-        transform: rotate(90deg)
-    }
 `
 
 /// example of extending a style:

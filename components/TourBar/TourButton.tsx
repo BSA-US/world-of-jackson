@@ -5,6 +5,7 @@ import UITheme from 'styled-components';
 
 const TourNodeButton = UITheme.button`
     display: inline-block;
+    flex-shrink: 1;
     background-color: black;
     border-radius: 50%;
     width: 32px;
@@ -15,17 +16,6 @@ const TourNodeButton = UITheme.button`
     }
 
 `
-/*
-const TourDescription = UITheme.div`
-    font-size: 0.7em;
-    line-height: 1em;
-    color: purple;
-    margin: 5px;
-    overflow: hidden;
-    transition-property: max-height;
-    transition-duration: 0.4s;
-    transition-timing-function: ease-in-out;
-`*/
 
 const TourButton: FunctionComponent<{ tourNode: ITourNode, handleTourClick: (tourNode: ITourNode) => void
     selectedTourNode: ITourNode | null 
