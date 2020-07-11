@@ -6,6 +6,8 @@ import { ITourNode } from "../TourBar/TourBar";
 
 import UITheme from "styled-components";
 // var sanitizeHtml: any = require('sanitize-html');
+import mediaQueries from "../../media-queries/mediaQueries";
+const media = mediaQueries;
 
 const InfoArea = UITheme.div`
     background-color: #0f1007;
@@ -21,6 +23,15 @@ const InfoArea = UITheme.div`
     left: 50%;
     top: 80px;
     margin: 0 -200px 0 0;
+    ${media.desktop} {
+      // put desktop specific stuff in here
+    }
+    ${media.tablet} {
+    }
+    ${media.phone} {
+    }
+    ${media.smallPhone} {
+    }
 `;
 
 const EmbeddedImage = UITheme.img`
