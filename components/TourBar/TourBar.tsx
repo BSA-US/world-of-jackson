@@ -2,22 +2,22 @@ import React from "react";
 import type { FunctionComponent } from "react";
 import TourButton from "./TourButton";
 import TourNavButton from "./TourNavButton";
-import { MobileScreenSize } from "../constants";
 import UITheme from "styled-components";
 import { LngLat } from "~/pages";
 import { Document } from "@contentful/rich-text-types";
+import mediaQueries from "../../media-queries/mediaQueries";
 
 const NavBar = UITheme.div`
     position: absolute;
 
-    @media screen and (min-width: ${MobileScreenSize}px) {
+    ${mediaQueries.notPhone} {
       flex-direction: row;
       left: 8px;
       right: 8px;
       height: 80px;
       bottom: 16px;
     }
-    @media screen and (max-width: ${MobileScreenSize}px) {
+    ${mediaQueries.phone} {
       flex-direction: column;
       left: 0px;
       width: 80px;

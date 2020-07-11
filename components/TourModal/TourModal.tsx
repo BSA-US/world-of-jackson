@@ -8,7 +8,6 @@ import { useSwipeable } from 'react-swipeable';
 
 import UITheme from "styled-components";
 import mediaQueries from "../../media-queries/mediaQueries";
-const media = mediaQueries;
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 
@@ -22,15 +21,10 @@ const imageMaxHeight: string = "300px"
 const InfoArea = UITheme.div`
     background-color: #0f1007;
     color: #ddd;
-    padding: ${modalBorderRadius}px ${modalSidePadding};
 
-    ${media.desktop} {
-      // put desktop specific stuff in here
-    }
-    ${media.tablet} {
-    }
-    ${media.smallPhone} {
-    }
+    left: ${modalWidthRadius};
+    right: ${modalWidthRadius};
+    padding: ${modalBorderRadius}px ${modalSidePadding};
 
     position: absolute;
     font-size: 0.8em;
@@ -42,9 +36,7 @@ const InfoArea = UITheme.div`
     flex-direction: column;
 
     height: 100%;
-    left: ${modalWidthRadius};
-    right: ${modalWidthRadius};
-    ${media.phone} {
+    ${mediaQueries.phone} {
       left: ${modalWidthRadiusMobile};
       right: 0;
       padding-left: ${modalSidePaddingMobile};

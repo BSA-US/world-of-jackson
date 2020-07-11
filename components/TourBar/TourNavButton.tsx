@@ -4,7 +4,7 @@ import UITheme from 'styled-components';
 import ArrowLeftIcon from '@material-ui/icons/ArrowLeft';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 
-import { MobileScreenSize } from '../constants';
+import mediaQueries from "../../media-queries/mediaQueries";
 
 const NavButton = UITheme.button`
     display: inline-block;
@@ -21,7 +21,7 @@ const NavButton = UITheme.button`
     }
     white-space: nowrap;
     overflow: hidden;
-    @media screen and (max-width: ${MobileScreenSize}px) {
+    ${mediaQueries.phone} {
         transform: rotate(90deg)
     }
 `
