@@ -81,6 +81,9 @@ const Map: FunctionComponent<IMapProps> = ({
   }, []);
 
   return <div className={`${cn.map} ${className}`}>
+    <p id="latitude" style={{display: 'none'}}>{viewState.latitude}</p>
+    <p id="longitude" style={{display: 'none'}}>{viewState.longitude}</p>
+
     <DeckGLReact.DeckGL
       layers={ GetLayers(layer_params) }
       effects={ effects }
