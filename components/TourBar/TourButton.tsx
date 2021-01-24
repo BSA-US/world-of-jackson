@@ -49,6 +49,7 @@ const TourButton: FunctionComponent<{
     selectedTourNode && selectedTourNode.label === tourNode.label;
   return (
     <TourNodeButton
+      data-testid="TourNodeButton"
       key={tourNode.label}
       onClick={() => handleTourClick(tourNode)}
       className={isSelected ? "selected" : ""}

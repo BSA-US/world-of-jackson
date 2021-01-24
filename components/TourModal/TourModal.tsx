@@ -67,6 +67,7 @@ const TourModal: FunctionComponent<{ selectedTourNode: ITourNode | null }> = ({
     : null;
   return (
     <InfoArea
+      data-testid="TourModalInfo"
       onClick={() => {
         setIsExpanded(!isExpanded);
       }}

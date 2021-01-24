@@ -176,6 +176,7 @@ const Index: FunctionComponent = () => {
           )}
 
           <TourBar
+            data-testid="TourBar"
             tour={tour}
             handleTourClick={selectTour}
             selectedTourNode={selectedTourNode}
